@@ -1,13 +1,15 @@
 public class Elevator implements Runnable {
 
     private final int elevatorID;
+    private ElevatorQueue elevatorqueue;
     private boolean stopped;
     private int currentFloor;
     private boolean doorOpen;
 
 
-    public Elevator(int elevatorID){
+    public Elevator(int elevatorID, ElevatorQueue queue){
         this.elevatorID = elevatorID;
+        this.elevatorqueue = queue;
         currentFloor = 1;
         doorOpen = true;
         System.out.println("Elevator " + elevatorID + " created\n");
@@ -21,8 +23,13 @@ public class Elevator implements Runnable {
         return stopped;
     }
 
-    public void buttonPushed(){
-        Request request = new Request();
+    public void buttonPushed(int buttonID){
+        System.out.println("Button "+buttonID+ " pushed!");
+        LocalDateTime currentTime = LocalDateTime.now();
+        //int buttonID = 5; // can be changed ofc
+        Request request = new Request(true, currentTime, elevatorID, buttonID, currentFloor);
+        elevatorqueue.putInRequestBox(request);
+        System.out.println("Request sent!");
     }
 
     public void goToFloor(int newFloor){
@@ -73,6 +80,11 @@ public class Elevator implements Runnable {
 
 
     @Override
-    public void run(){}
+    public void run(){
+        buttonPushed(5);
+        while(true){
+            handleInstruction();
+        }
+    }
 
 }

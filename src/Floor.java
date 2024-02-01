@@ -3,15 +3,19 @@ import java.time.*;
 
 public class Floor implements Runnable {
 
-
+    private ElevatorQueue elevatorqueue;
     private int floorNumber;
     private boolean waiting;
-    private final BlockingQueue<Request> requestQueue; // Assuming a shared request queue for communication
+    // private final BlockingQueue<Request> requestQueue; // Assuming a shared request queue for communication
+    private ElevatorQueue requestQueue;
 
-    public Floor(int floorNumber, BlockingQueue<Request> requestQueue) {
+    public Floor(int floorNumber, ElevatorQueue queue) { // BlockingQueue<Request> requestQueue) {
+        System.out.println("Floor "+ floorNumber + " been created");
         this.floorNumber = floorNumber;
         this.waiting = false;
-        this.requestQueue = requestQueue;
+        this.requestQueue = queue;
+        //this.requestQueue = requestQueue;
+
     }
 
     public boolean isWaiting(){
@@ -30,13 +34,9 @@ public class Floor implements Runnable {
         // Create a new request with the current time, floor number, and button direction
         Request newRequest = new Request(tonId);
         // Try to send this request to the Scheduler
-        try {
-            requestQueue.put(newRequest);
-            System.out.println("Floor " + floorNumber + ": Request for " + (buttonDirection ? "UP" : "DOWN") + " button pushed.");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            System.out.println("Failed to send request from floor " + floorNumber);
-        }
+        //requestQueue.put(newRequest);
+        requestQueue.putInRequestBox(newRequest);
+        System.out.println("Floor " + floorNumber + ": Request for " + (buttonDirection ? "UP" : "DOWN") + " button pushed.");
         this.waiting = true; // The floor is now waiting for an elevator
 
         //Change this, it is temporary
@@ -46,6 +46,12 @@ public class Floor implements Runnable {
 
 
     @Override
-    public void run(){}
+    public void run(){
+      //  if (floorNumber % 2 == 1){
+       //     buttonPushed(true);
+      //  } else {
+       //     buttonPushed(false);
+       // }
+    }
 
 }

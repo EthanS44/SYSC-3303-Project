@@ -1,3 +1,7 @@
+import java.time.*;
+
+import static java.lang.Thread.sleep;
+
 public class Elevator implements Runnable {
 
     private final int elevatorID;

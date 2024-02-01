@@ -32,7 +32,7 @@ public class Floor implements Runnable {
         // converts the buttonDirection to buttonID (0 = down and 1 = up)
         int buttonId = buttonDirection ? 1 : 0;
         // Create a new request with the current time, floor number, and button direction
-        Request newRequest = new Request(tonId);
+        Request newRequest = new Request(false, currentTime , floorNumber, buttonId, getFloorNumber());
         // Try to send this request to the Scheduler
         //requestQueue.put(newRequest);
         requestQueue.putInRequestBox(newRequest);

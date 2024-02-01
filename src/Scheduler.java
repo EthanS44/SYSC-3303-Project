@@ -45,12 +45,37 @@ public class Scheduler implements Runnable {
         request.setRequestAcknowledged(true);
     }
 
-    public void handleRequest(Request request){
-        // Take request
-        // figure out the floor to go to
-        // add floor to list of floors to visit
-        // figure out which elevator to send the instruction to
-        // call sendInstruction()
+    public void handleRequest(){
+        Request requestToHandle = elevatorqueue.getFromRequestBox();
+        System.out.println("Request received by scheduler\n");
+
+        //This is for gathering information about what will be in the instruction
+        boolean tempDirection;
+        int tempFloorNumber;
+
+        //If it's an elevator it has it's own set of rules
+        if(requestToHandle.isElevator()){
+            if(requestToHandle.getCurrentFloor() > requestToHandle.getButtonId()){
+                tempDirection = false; // Down = false
+            }
+            else{
+                tempDirection = true; // Up = True
+            }
+            tempFloorNumber = requestToHandle.getButtonId(); // Copies the floor number to the temp variable
+
+        }
+        else {
+            if(requestToHandle.getCurrentFloor() > requestToHandle.getIndexNumber()){
+                tempDirection = false; // Down = False
+            } else {
+                tempDirection = true; // Up = True
+            }
+            tempFloorNumber = requestToHandle.getIndexNumber();
+        }
+
+        elevatorqueue.putInInstructionBox(new Instruction(tempDirection,tempFloorNumber));
+        acknowledgeRequest(requestToHandle);
+        System.out.println("Request handled");
     }
 
     public void sendInstruction(/*which elevator to send to*/){

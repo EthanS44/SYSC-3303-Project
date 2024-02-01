@@ -1,4 +1,5 @@
 import java.util.concurrent.BlockingQueue;
+import java.time.*;
 
 public class Floor implements Runnable {
 
@@ -22,6 +23,8 @@ public class Floor implements Runnable {
     }
 
     public boolean buttonPushed(boolean buttonDirection){
+        System.out.println("Button pressed on floor "+floorNumber);
+        LocalDateTime currentTime = LocalDateTime.now();
         // converts the buttonDirection to buttonID (0 = down and 1 = up)
         int buttonId = buttonDirection ? 1 : 0;
         // Create a new request with the current time, floor number, and button direction
@@ -35,6 +38,9 @@ public class Floor implements Runnable {
             System.out.println("Failed to send request from floor " + floorNumber);
         }
         this.waiting = true; // The floor is now waiting for an elevator
+
+        //Change this, it is temporary
+        return true;
     }
 
 

@@ -35,7 +35,7 @@ public class ElevatorQueue {
             }
             System.out.println("Request taken from box by scheduler\n");
             return request;
-            
+
     }
 
     public synchronized void putInInstructionBox(Instruction instruction) {

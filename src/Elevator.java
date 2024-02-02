@@ -42,12 +42,12 @@ public class Elevator implements Runnable {
         while(newFloor != currentFloor) {
             //If statement for the elevator to go up
             if(newFloor > currentFloor) {
-                System.out.println("Elevator " + elevatorID + " Going to floor " + newFloor + "Current floor " + currentFloor + "\n");
+                System.out.println("Elevator " + elevatorID + " Going to floor " + newFloor + " Current floor " + currentFloor + "\n");
                 currentFloor += 1;
             }
             //If statement for the elevator to go down
             else if (newFloor < currentFloor){
-                System.out.println("Elevator " + elevatorID + " Going to floor " + newFloor + "Current floor " + currentFloor + "\n");
+                System.out.println("Elevator " + elevatorID + " Going to floor " + newFloor + " Current floor " + currentFloor + "\n");
                 currentFloor -= 1;
             }
         }

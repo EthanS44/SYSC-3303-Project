@@ -18,24 +18,30 @@ public class ElevatorQueue {
         requestBox.add(request);
         requestBoxEmpty = false;
         System.out.println("Request put in box\n");
+        notifyAll();
     }
 
-    public Request getFromRequestBox() { // Sam Wilson 101195493
+    public synchronized Request getFromRequestBox() { // Sam Wilson 101195493
         // Wait for requestBox to be not empty
-        while (requestBoxEmpty) {}
-
-            // get first request in requestBox
-            Request request = requestBox.get(0);
-            // remove request from requestBox
-            requestBox.remove(request);
-
-            // set requestBoxEmpty to true if requestBox is empty
-            if (requestBox.isEmpty()) {
-                requestBoxEmpty = true;
+        while (requestBoxEmpty) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
             }
-            System.out.println("Request taken from box by scheduler\n");
-            return request;
+        }
 
+        // get first request in requestBox
+        Request request = requestBox.get(0);
+        // remove request from requestBox
+        requestBox.remove(request);
+
+        // set requestBoxEmpty to true if requestBox is empty
+        if (requestBox.isEmpty()) {
+            requestBoxEmpty = true;
+        }
+        System.out.println("Request taken from box by scheduler\n");
+        notifyAll();
+        return request;
     }
 
     public synchronized void putInInstructionBox(Instruction instruction) {

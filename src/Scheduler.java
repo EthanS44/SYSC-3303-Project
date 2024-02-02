@@ -16,7 +16,7 @@ public class Scheduler implements Runnable {
 
     public void handleRequest(){
         Request requestToHandle = elevatorqueue.getFromRequestBox();
-        System.out.println("Request received by scheduler\n");
+        System.out.println("Request received by scheduler, now handling\n");
 
         //This is for gathering information about what will be in the instruction
         boolean tempDirection;

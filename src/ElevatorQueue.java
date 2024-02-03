@@ -8,11 +8,18 @@ public class ElevatorQueue {
 
     private static final int numberOfFloors = 7; // idk if we need this or not yet
 
+    /**
+     * Constructor for the Elevator that takes initializes a requestBox and instructionBox
+     */
     public ElevatorQueue(){
         requestBox = new ArrayList<Request>();
         instructionBox = new ArrayList<Instruction>();
     }
 
+    /**
+     * puts a request into the request box
+     * @param request - the request to be put in
+     */
     public synchronized void putInRequestBox(Request request){ // Sam Wilson 101195493
         // Does not need a check as requestBox is never full
         requestBox.add(request);
@@ -21,6 +28,10 @@ public class ElevatorQueue {
         notifyAll();
     }
 
+    /**
+     * Gets a request from the box
+     * @return - the request in the 0th position in the list
+     */
     public synchronized Request getFromRequestBox() { // Sam Wilson 101195493
         // Wait for requestBox to be not empty
         while (requestBoxEmpty) {
@@ -44,12 +55,20 @@ public class ElevatorQueue {
         return request;
     }
 
+    /**
+     * puts an instruction into the instructionBox
+     * @param instruction - the instruction to be put into the box
+     */
     public synchronized void putInInstructionBox(Instruction instruction) {
         instructionBox.add(instruction);
         instructionBoxEmpty = false;
         notifyAll();
     }
 
+    /**
+     * Gets the instruction from the instruction box
+     * @return - The instruction at the 0th position in the list
+     */
     public synchronized Instruction getFromInstructionBox(){
         // wait for instructionBox to be not empty
         while(instructionBoxEmpty){

@@ -10,6 +10,14 @@ public class Request {
     private final int currentFloor;
     private boolean requestAcknowledged;
 
+    /**
+     * Constructor for the Request class
+     * @param isElevator - True if an elevator is making the request, false if it's the floor
+     * @param time - Current time
+     * @param indexNumber - what floor/elevator is the request coming from
+     * @param buttonId - if isElevator = true: buttonId = floor button #. If isElevator = false: 1 = up, 0 = down.
+     * @param currentFloor - What floor the elevator is currently on/what floor the request is being made from
+     */
     public Request(boolean isElevator, LocalDateTime time, int indexNumber, int buttonId, int currentFloor){
         this.isElevator = isElevator;
         this.time = time;
@@ -18,24 +26,57 @@ public class Request {
         this.currentFloor = currentFloor;
         requestAcknowledged = false;
     }
+
+    /**
+     * Getter for isElevator
+     * @return - True if it's coming from an elevator, false if it's coming from a floor
+     */
     public boolean isElevator(){
         return this.isElevator;
     }
+
+    /**
+     * Getter for time
+     * @return - LocalDateTime current time
+     */
     public LocalDateTime getTime(){
         return this.time;
     }
+
+    /**
+     * Getter for buttonID
+     * @return - if isElevator = true: buttonId = floor button #. If isElevator = false: 1 = up, 0 = down.
+     */
     public int getButtonId() {
         return buttonId;
     }
+
+    /**
+     * Getter for index number
+     * @return - what floor/elevator is the request coming from
+     */
     public int getIndexNumber() {
         return indexNumber;
     }
+
+    /**
+     * Getter for current floor
+     * @return - What floor the elevator is currently on/what floor the request is being made from
+     */
     public int getCurrentFloor() {return currentFloor;}
 
+    /**
+     * Setter for requestAcknowledged
+     * @param requestAcknowledged - True for if request was acknowledged, false if it wasnt
+     */
     public void setRequestAcknowledged(boolean requestAcknowledged) {
         this.requestAcknowledged = requestAcknowledged;
     }
 
+    /**
+     * Getter for acknowledge request
+     * @return - true if acknowledged, false if not acknowledged
+     */
     public boolean getRequestAcknowledged(){
         return requestAcknowledged;
     }

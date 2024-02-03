@@ -9,6 +9,11 @@ public class Floor implements Runnable {
     // private final BlockingQueue<Request> requestQueue; // Assuming a shared request queue for communication
     private ElevatorQueue requestQueue;
 
+    /**
+     * Constructor for the floor class
+     * @param floorNumber - specific floor
+     * @param queue - Shared queue to feed requests to the scheduler
+     */
     public Floor(int floorNumber, ElevatorQueue queue) { // BlockingQueue<Request> requestQueue) {
         System.out.println("Floor "+ floorNumber + " been created");
         this.floorNumber = floorNumber;
@@ -18,14 +23,27 @@ public class Floor implements Runnable {
 
     }
 
+    /**
+     * Getter for the isWaiting variable
+     * @return - True = waiting, False = not waiting
+     */
     public boolean isWaiting(){
         return waiting;
     }
 
+    /**
+     * Getter for the floor number
+     * @return - Floor number
+     */
     public int getFloorNumber() {
         return floorNumber;
     }
 
+    /**
+     * When a button is pushed this function puts a request into the request box
+     * @param buttonDirection - What direction the user wants to go
+     * @return - true if the request has went through
+     */
     public boolean buttonPushed(boolean buttonDirection){
         System.out.println("Button pressed on floor "+floorNumber);
         LocalDateTime currentTime = LocalDateTime.now();

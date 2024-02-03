@@ -5,15 +5,29 @@ public class Scheduler implements Runnable {
     private static final int numberOfFloors = 7;
     private final ElevatorQueue elevatorqueue;
 
+
+    /**
+     * Constructor for Scheduler class
+     * @param queue - Shared queue
+     */
     public Scheduler(ElevatorQueue queue){
         this.elevatorqueue = queue;
         System.out.println("Scheduler created\n");
     }
 
+
+    /**
+     * acknowledges request
+     * @param request - request to be acknowledged
+     */
     public void acknowledgeRequest(Request request){
         request.setRequestAcknowledged(true);
     }
 
+
+    /**
+     * Handles request by creating an instruction out of it
+     */
     public void handleRequest(){
         Request requestToHandle = elevatorqueue.getFromRequestBox();
         System.out.println("Request received by scheduler, now handling\n");
@@ -47,6 +61,9 @@ public class Scheduler implements Runnable {
         System.out.println("Request handled");
     }
 
+    /**
+     * Constantly handling any requests in the requestBox
+     */
     @Override
     public void run(){
         while(true){

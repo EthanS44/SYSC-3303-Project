@@ -8,12 +8,31 @@ public class ElevatorQueue {
 
     private static final int numberOfFloors = 7; // idk if we need this or not yet
 
-    /**
-     * Constructor for the Elevator that takes initializes a requestBox and instructionBox
-     */
     public ElevatorQueue(){
         requestBox = new ArrayList<Request>();
         instructionBox = new ArrayList<Instruction>();
+    }
+    /**
+     * This method Checks if the request box is empty
+     * @return boolean
+     */
+    public boolean isRequestBoxEmpty(){
+        return requestBox.isEmpty();
+    }
+    /**
+     * This method Checks if the Instruction box is empty
+     * @return boolean
+     */
+    public boolean isInstructionBoxEmpty(){
+        return instructionBox.isEmpty();
+    }
+
+    /**
+     * This method returns the instruction box
+     * @return ArrayList<Instruction>
+     */
+    public ArrayList<Instruction> instructionBox(){
+        return instructionBox;
     }
 
     /**

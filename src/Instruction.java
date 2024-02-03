@@ -1,4 +1,5 @@
 public class Instruction {
+
     private boolean direction; // Up = true, down = false
     private int floorNumber; // Just the floorNumber to go to
 

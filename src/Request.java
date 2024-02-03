@@ -1,7 +1,6 @@
 // the Request class is essentially analogous to a Packet, this is the structure that the elevators and floors will send to the scheduler.
 
 import java.time.LocalDateTime;
-
 public class Request {
     private final boolean isElevator; // true for elevator, false for floor
     private final LocalDateTime time; // time the button was pushed

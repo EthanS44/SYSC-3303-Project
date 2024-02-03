@@ -12,7 +12,28 @@ public class ElevatorQueue {
         requestBox = new ArrayList<Request>();
         instructionBox = new ArrayList<Instruction>();
     }
+    /**
+     * This method Checks if the request box is empty
+     * @return boolean
+     */
+    public boolean isRequestBoxEmpty(){
+        return requestBox.isEmpty();
+    }
+    /**
+     * This method Checks if the Instruction box is empty
+     * @return boolean
+     */
+    public boolean isInstructionBoxEmpty(){
+        return instructionBox.isEmpty();
+    }
 
+    /**
+     * This method returns the instruction box
+     * @return ArrayList<Instruction>
+     */
+    public ArrayList<Instruction> instructionBox(){
+        return instructionBox;
+    }
     public synchronized void putInRequestBox(Request request){ // Sam Wilson 101195493
         // Does not need a check as requestBox is never full
         requestBox.add(request);

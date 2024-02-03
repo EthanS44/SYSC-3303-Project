@@ -18,6 +18,21 @@ public class Elevator implements Runnable {
         doorOpen = true;
         System.out.println("Elevator " + elevatorID + " created\n");
     }
+    /**
+     * This method returns the current floor
+     * @return int
+     */
+    public int getCurrentFloor(){
+        return currentFloor;
+    }
+
+    /**
+     * This method returns true if the door is opened and false otherwise
+     * @return boolean
+     */
+    public boolean isDoorOpen(){
+        return doorOpen;
+    }
 
     public int getElevatorID() {
         return elevatorID;

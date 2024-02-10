@@ -1,6 +1,42 @@
 import java.time.*;
 
 import static java.lang.Thread.sleep;
+class ElevatorWaiting implements ElevatorState {
+    @Override
+    public void handle(Elevator elevator){
+        // state instructions go here
+        elevator.setState(new ElevatorMoving());
+    }
+}
+class ElevatorMoving implements ElevatorState{
+    @Override
+    public void handle(Elevator elevator){
+
+        int oldFloor = elevator.getCurrentFloor();
+        while(newFloor != elevator.getCurrentFloor()) {
+            //If statement for the elevator to go up
+            if(newFloor > elevator.getCurrentFloor()) {
+                System.out.println("Elevator " + elevator.getElevatorID() + " Going to floor " + newFloor + " Current floor " + elevator.getCurrentFloor() + "\n");
+                elevator.setCurrentFloor(elevator.getCurrentFloor() + 1);
+            }
+            //If statement for the elevator to go down
+            else if (newFloor < elevator.getCurrentFloor()){
+                System.out.println("Elevator " + elevator.getElevatorID() + " Going to floor " + newFloor + " Current floor " + elevator.getCurrentFloor() + "\n");
+                elevator.setCurrentFloor(elevator.getCurrentFloor() - 1);
+            }
+        }
+        System.out.println("Arrived at floor " + elevator.getCurrentFloor());
+
+        elevator.setState(new ElevatorHandlingDoor());
+    }
+}
+class ElevatorHandlingDoor implements ElevatorState{
+    @Override
+    public void handle(Elevator elevator){
+        // state instructions go here
+        elevator.setState(new ElevatorWaiting());
+    }
+}
 
 public class Elevator implements Runnable {
 
@@ -27,7 +63,14 @@ public class Elevator implements Runnable {
         return stopped;
     }
 
-    public void buttonPushed(int buttonID){
+    public int getCurrentFloor() { return currentFloor; }
+    public void setCurrentFloor(int newFloor) { currentFloor = newFloor; }
+
+    public boolean isDoorOpen() { return doorOpen; }
+
+    public ElevatorState getCurrentState() { return currentState; }
+
+    public void pushButton(int buttonID){
         System.out.println("Button "+buttonID+ " pushed!");
         LocalDateTime currentTime = LocalDateTime.now();
         //int buttonID = 5; // can be changed ofc
@@ -38,20 +81,6 @@ public class Elevator implements Runnable {
 
     public void goToFloor(int newFloor){
         //int newFloor = instruction.getFloorNumber();
-
-        while(newFloor != currentFloor) {
-            //If statement for the elevator to go up
-            if(newFloor > currentFloor) {
-                System.out.println("Elevator " + elevatorID + " Going to floor " + newFloor + " Current floor " + currentFloor + "\n");
-                currentFloor += 1;
-            }
-            //If statement for the elevator to go down
-            else if (newFloor < currentFloor){
-                System.out.println("Elevator " + elevatorID + " Going to floor " + newFloor + " Current floor " + currentFloor + "\n");
-                currentFloor -= 1;
-            }
-        }
-        System.out.println("Arrived at floor " + currentFloor);
     }
 
     public void openDoor(){
@@ -85,7 +114,7 @@ public class Elevator implements Runnable {
 
     @Override
     public void run(){
-        buttonPushed(5);
+        pushButton(5);
         while(true){
             handleInstruction();
         }

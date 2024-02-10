@@ -45,13 +45,15 @@ public class Elevator implements Runnable {
     private boolean stopped;
     private int currentFloor;
     private boolean doorOpen;
+    private ElevatorState currentState;
 
 
     public Elevator(int elevatorID, ElevatorQueue queue){
         this.elevatorID = elevatorID;
         this.elevatorqueue = queue;
         currentFloor = 1;
-        doorOpen = true;
+        doorOpen = false;
+        this.currentState = new ElevatorWaiting();
         System.out.println("Elevator " + elevatorID + " created\n");
     }
 
@@ -109,6 +111,14 @@ public class Elevator implements Runnable {
 
         closeDoor();
         System.out.println("INSTRUCTION HANDLED");
+    }
+
+    public void setState(ElevatorState state) {
+        this.currentState = state;
+    }
+
+    public void request() {
+        this.currentState.handle(this);
     }
 
 

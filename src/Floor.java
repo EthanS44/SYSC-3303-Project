@@ -66,11 +66,9 @@ public class Floor implements Runnable {
 
     @Override
     public void run(){
-      //  if (floorNumber % 2 == 1){
-       //     buttonPushed(true);
-      //  } else {
-       //     buttonPushed(false);
-       // }
+      if (floorNumber == 1){
+          buttonPushed(true);
+        }
     }
 
 }

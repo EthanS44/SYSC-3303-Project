@@ -21,7 +21,7 @@ public class SchedulerTest {
     }
 
     @Test
-    public void testHandleRequestEleavtor() {
+    public void testHandleRequestElevator() {
         ElevatorQueue elevatorQueue = new ElevatorQueue();
         Scheduler scheduler = new Scheduler(elevatorQueue);
 

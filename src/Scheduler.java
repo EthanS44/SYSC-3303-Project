@@ -1,33 +1,54 @@
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+//new
+class ElevatorWaiting implements schedulerState {
+    @Override
+    public void handle(Scheduler scheduler){
+
+
+        if (scheduler.hasPendingRequests()) {
+            scheduler.setCurrentState(new HandlingRequest());
+        } else {
+            System.out.println("No pending requests. Waiting...");
+        }
+    }
+
+} //new
+class HandlingRequest implements schedulerState{
+    @Override
+    public void handle(Scheduler scheduler){
+        scheduler.handleRequest();
+        scheduler.setCurrentState(new ElevatorWaiting());
+    }
+}
 public class Scheduler implements Runnable {
     private static final int numberOfFloors = 7;
     private final ElevatorQueue elevatorqueue;
+    private schedulerState currentState; //new
 
 
-    /**
-     * Constructor for Scheduler class
-     * @param queue - Shared queue
-     */
     public Scheduler(ElevatorQueue queue){
         this.elevatorqueue = queue;
+        this.currentState = new ElevatorWaiting(); //new
         System.out.println("Scheduler created\n");
     }
 
+    //new
+    public schedulerState getCurrentState() { return currentState; }
+    //new
+    public void setCurrentState(schedulerState state){
+        this.currentState = state;
+    }
+    //new
+    public void request() {
+        this.currentState.handle(this);
+    }
 
-    /**
-     * acknowledges request
-     * @param request - request to be acknowledged
-     */
     public void acknowledgeRequest(Request request){
         request.setRequestAcknowledged(true);
     }
 
-
-    /**
-     * Handles request by creating an instruction out of it
-     */
     public void handleRequest(){
         Request requestToHandle = elevatorqueue.getFromRequestBox();
         System.out.println("Request received by scheduler, now handling\n");
@@ -60,14 +81,17 @@ public class Scheduler implements Runnable {
         acknowledgeRequest(requestToHandle);
         System.out.println("Request handled");
     }
+    public boolean hasPendingRequests() {
+        return elevatorqueue.isRequestBoxEmpty();
+    }
 
-    /**
-     * Constantly handling any requests in the requestBox
-     */
+
     @Override
     public void run(){
+
         while(true){
-            handleRequest();
+            // handleRequest();
+            request();
         }
     }
 

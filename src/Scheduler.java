@@ -2,7 +2,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 //new
-class ElevatorWaiting implements schedulerState {
+class SchedulerWaiting implements schedulerState {
     @Override
     public void handle(Scheduler scheduler){
 
@@ -11,6 +11,12 @@ class ElevatorWaiting implements schedulerState {
             scheduler.setCurrentState(new HandlingRequest());
         } else {
             System.out.println("No pending requests. Waiting...");
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // Reset interrupt status
+                System.out.println("Failed to handle instruction" );
+            }
         }
     }
 
@@ -19,7 +25,7 @@ class HandlingRequest implements schedulerState{
     @Override
     public void handle(Scheduler scheduler){
         scheduler.handleRequest();
-        scheduler.setCurrentState(new ElevatorWaiting());
+        scheduler.setCurrentState(new SchedulerWaiting());
     }
 }
 public class Scheduler implements Runnable {
@@ -30,7 +36,7 @@ public class Scheduler implements Runnable {
 
     public Scheduler(ElevatorQueue queue){
         this.elevatorqueue = queue;
-        this.currentState = new ElevatorWaiting(); //new
+        this.currentState = new SchedulerWaiting(); //new
         System.out.println("Scheduler created\n");
     }
 

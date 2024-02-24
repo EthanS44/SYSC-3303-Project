@@ -39,7 +39,7 @@ public class Floor implements Runnable {
     /**
      * Getter for the floor number
      * @return - Floor number
-     *
+     */
     public int getFloorNumber() {
         return floorNumber;
     }
@@ -101,6 +101,13 @@ public class Floor implements Runnable {
         }
         while(true){
             handleButtons();
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // Reset interrupt status
+                System.out.println("Failed to handle instruction" );
+            }
         }
     }
 }

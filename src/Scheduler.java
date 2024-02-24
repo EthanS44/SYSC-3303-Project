@@ -17,10 +17,10 @@ class SchedulerWaiting implements schedulerState {
             System.out.println("Scheduler state changed to HandlingRequest\n");
         }
 
-        if (!scheduler.noPendingResponses()){
-            Response response = scheduler.elevatorqueue.responseBox().get(0);
-            System.out.println("Scheduler received response from floor " + response.getFloorNumber() + "\n");
-        }
+        //if (!scheduler.noPendingResponses()){
+           // Response response = scheduler.elevatorqueue.getFromResponseBox();
+            //System.out.println("Scheduler received response from floor " + response.getFloorNumber() + "\n");
+       // }
     }
 
 } //new

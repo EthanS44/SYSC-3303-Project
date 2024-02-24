@@ -49,6 +49,4 @@ public class ElevatorQueueTest {
         //Check if instruction box is empty
         assertTrue(elevatorQueue2.isInstructionBoxEmpty());
     }
-
-
 }

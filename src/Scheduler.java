@@ -1,8 +1,13 @@
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-//new
-class ElevatorWaiting implements schedulerState {
+public class Scheduler implements Runnable {
+    private static final int numberOfFloors = 7;
+    private final ElevatorQueue elevatorqueue;
+    private schedulerState currentState; //new
+    private ArrayList<Floor> floors;
+
+class SchedulerWaiting implements schedulerState {
     @Override
     public void handle(Scheduler scheduler){
         System.out.println("Is request box empty: " + scheduler.noPendingRequests());
@@ -11,6 +16,11 @@ class ElevatorWaiting implements schedulerState {
             scheduler.setCurrentState(new HandlingRequest());
             System.out.println("Scheduler state changed to HandlingRequest\n");
         }
+
+        if (!scheduler.noPendingResponses()){
+            Response response = scheduler.elevatorqueue.getFromResponseBox();
+            System.out.println("Scheduler received response from floor " + response.getFloorNumber() + "\n");
+        }
     }
 
 } //new
@@ -18,13 +28,14 @@ class HandlingRequest implements schedulerState{
     @Override
     public void handle(Scheduler scheduler){
         scheduler.handleRequest();
-        scheduler.setCurrentState(new ElevatorWaiting());
+        scheduler.setCurrentState(new SchedulerWaiting());
+        System.out.println("Scheduler state changed to SchedulerWaiting\n");
     }
 }
 
     public Scheduler(ElevatorQueue queue){
         this.elevatorqueue = queue;
-        this.currentState = new ElevatorWaiting(); //new
+        this.currentState = new SchedulerWaiting(); //new
         System.out.println("Scheduler created\n");
     }
 
@@ -39,10 +50,6 @@ class HandlingRequest implements schedulerState{
         this.currentState.handle(this);
     }
 
-    public void acknowledgeRequest(Request request){
-        request.setRequestAcknowledged(true);
-    }
-
     public void handleRequest(){
         Request requestToHandle = elevatorqueue.getFromRequestBox();
         System.out.println("Request received by scheduler, now handling\n");
@@ -51,7 +58,7 @@ class HandlingRequest implements schedulerState{
         boolean tempDirection;
         int tempFloorNumber;
 
-        //If it's an elevator it has it's own set of rules
+        //If it's an elevator it has its own set of rules
         if(requestToHandle.isElevator()){
             if(requestToHandle.getCurrentFloor() > requestToHandle.getButtonId()){
                 tempDirection = false; // Down = false
@@ -72,8 +79,7 @@ class HandlingRequest implements schedulerState{
         }
 
         elevatorqueue.putInInstructionBox(new Instruction(tempDirection,tempFloorNumber));
-        acknowledgeRequest(requestToHandle);
-        System.out.println("Request handled");
+        System.out.println("Scheduler: Request handled");
     }
 
     public boolean noPendingRequests() {
@@ -91,6 +97,13 @@ class HandlingRequest implements schedulerState{
         while(true){
             // handleRequest();
             request();
+
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // Reset interrupt status
+                System.out.println("Failed to handle instruction" );
+            }
         }
     }
 }

@@ -2,15 +2,18 @@ import java.util.ArrayList;
 
 public class ElevatorQueue {
     private ArrayList<Request> requestBox;
-    private ArrayList<Instruction> instructionBox; // could be changed from 'Object' in the future
+    private ArrayList<Instruction> instructionBox;
+    private ArrayList<Response> responseBox;
     private boolean requestBoxEmpty = true;
     private boolean instructionBoxEmpty = true;
+    private boolean responseBoxEmpty = true;
 
     private static final int numberOfFloors = 7; // idk if we need this or not yet
 
     public ElevatorQueue(){
         requestBox = new ArrayList<Request>();
         instructionBox = new ArrayList<Instruction>();
+        responseBox = new ArrayList<Response>();
     }
     /**
      * This method Checks if the request box is empty
@@ -25,6 +28,14 @@ public class ElevatorQueue {
      */
     public boolean isInstructionBoxEmpty(){
         return instructionBox.isEmpty();
+    }
+
+    /**
+     * this method checks if response box is empty
+     * @return boolean
+     */
+    public boolean isResponseBoxEmpty(){
+        return responseBox.isEmpty();
     }
 
     /**
@@ -53,7 +64,7 @@ public class ElevatorQueue {
      */
     public synchronized Request getFromRequestBox() { // Sam Wilson 101195493
         // Wait for requestBox to be not empty
-        while (requestBoxEmpty) {
+        while (requestBox.isEmpty()) {
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -91,7 +102,7 @@ public class ElevatorQueue {
      */
     public synchronized Instruction getFromInstructionBox(){
         // wait for instructionBox to be not empty
-        while(instructionBoxEmpty){
+        while(instructionBox.isEmpty()){
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -111,5 +122,44 @@ public class ElevatorQueue {
         System.out.println("Instruction taken from box, current size: " + instructionBox.size() + "\n");
 
         return instruction;
+    }
+
+    /**
+     * puts a response into the responseBox
+     * @param response - The response to add to the Box
+     */
+    public synchronized void putInResponseBox(Response response){ // Sam Wilson 101195493
+        // Does not need a check as responseBox is never full
+        responseBox.add(response);
+        responseBoxEmpty = false;
+        System.out.println("Response put in box, current size: " + responseBox.size() + "\n");
+        notifyAll();
+    }
+
+    /**
+     * Gets a response from the responseBox
+     * @return - the response in the 0th position in the list
+     */
+    public synchronized Response getFromResponseBox() { // Sam Wilson 101195493
+        // Wait for requestBox to be not empty
+        while (responseBox.isEmpty()) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+            }
+        }
+
+        // get first request in responseBox
+        Response response = responseBox.get(0);
+        // remove request from responseBox
+        responseBox.remove(response);
+
+        // set responseBoxEmpty to true if requestBox is empty
+        if (responseBox.isEmpty()) {
+            responseBoxEmpty = true;
+        }
+        System.out.println("Response taken from box by scheduler, current size: " + responseBox.size() + "\n");
+        notifyAll();
+        return response;
     }
 }

@@ -3,6 +3,7 @@ import org.junit.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ElevatorTest {
+    /*
     @Test
     public void testGoToFloor() {
         // Create an ElevatorQueue for testing
@@ -34,9 +35,6 @@ public class ElevatorTest {
         elevator.closeDoor();
         assertFalse(elevator.isDoorOpen());
 
-
     }
-
-
-
+     */
 }

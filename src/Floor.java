@@ -4,7 +4,6 @@ import java.time.*;
 public class Floor implements Runnable {
 
 
-    private ElevatorQueue elevatorqueue;
     private int floorNumber;
     private boolean waiting;
     // private final BlockingQueue<Request> requestQueue; // Assuming a shared request queue for communication
@@ -45,6 +44,7 @@ public class Floor implements Runnable {
         return floorNumber;
     }
 
+
     /**
      * When a button is pushed this function puts a request into the request box
      * @param buttonDirection - What direction the user wants to go
@@ -80,12 +80,17 @@ public class Floor implements Runnable {
         downButton.resetButton();
         upLamp.turnOffLamp();
         downLamp.turnOffLamp();
+        System.out.println("Lights and lamps on floor " + floorNumber + " reset\n");
     }
 
     public void handleButtons(){
-        if (!elevatorqueue.isResponseBoxEmpty() & (elevatorqueue.responseBox().get(0).getFloorNumber() == floorNumber)){
-            elevatorqueue.getFromResponseBox();
-            resetLamps();
+
+        if (!(requestQueue.isResponseBoxEmpty())){
+            if ((requestQueue.responseBox().get(0).getFloorNumber() == floorNumber)) {
+                requestQueue.getFromResponseBox();
+                System.out.println("Handling buttons on floor " + floorNumber + "\n");
+                resetLamps();
+            }
         }
     }
 

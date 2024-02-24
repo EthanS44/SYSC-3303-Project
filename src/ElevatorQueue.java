@@ -133,7 +133,6 @@ public class ElevatorQueue {
         responseBox.add(response);
         responseBoxEmpty = false;
         System.out.println("Response put in box, current size: " + responseBox.size() + "\n");
-        notifyAll();
     }
 
     /**
@@ -158,7 +157,7 @@ public class ElevatorQueue {
         if (responseBox.isEmpty()) {
             responseBoxEmpty = true;
         }
-        System.out.println("Response taken from box by scheduler, current size: " + responseBox.size() + "\n");
+        System.out.println("Response taken from box, current size: " + responseBox.size() + "\n");
         notifyAll();
         return response;
     }

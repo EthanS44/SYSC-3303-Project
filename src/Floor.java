@@ -40,7 +40,7 @@ public class Floor implements Runnable {
     /**
      * Getter for the floor number
      * @return - Floor number
-     */
+     *
     public int getFloorNumber() {
         return floorNumber;
     }
@@ -75,12 +75,27 @@ public class Floor implements Runnable {
         return true;
     }
 
+    public void resetLamps(){
+        upButton.resetButton();
+        downButton.resetButton();
+        upLamp.turnOffLamp();
+        downLamp.turnOffLamp();
+    }
 
+    public void handleButtons(){
+        if (!elevatorqueue.isResponseBoxEmpty() & (elevatorqueue.responseBox().get(0).getFloorNumber() == floorNumber)){
+            elevatorqueue.getFromResponseBox();
+            resetLamps();
+        }
+    }
 
     @Override
     public void run() {
         if (floorNumber == 2) {
             pushButton(true);
+        }
+        while(true){
+            handleButtons();
         }
     }
 }

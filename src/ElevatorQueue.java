@@ -162,4 +162,8 @@ public class ElevatorQueue {
         notifyAll();
         return response;
     }
+
+    public ArrayList<Response> responseBox(){
+        return responseBox;
+    }
 }

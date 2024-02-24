@@ -57,18 +57,19 @@ public class Floor implements Runnable {
             case 0:
                 downButton.pressButton();
                 downLamp.turnOnLamp();
+                System.out.println("Down button pressed on floor "+floorNumber);
             case 1:
                 upButton.pressButton();
-                downLamp.turnOnLamp();
+                upLamp.turnOnLamp();
+                System.out.println("Up button pressed on floor "+floorNumber);
         }
-        System.out.println("Button pressed on floor "+floorNumber);
         LocalDateTime currentTime = LocalDateTime.now();
         // Create a new request with the current time, floor number, and button direction
         Request newRequest = new Request(false, currentTime , floorNumber, buttonId, getFloorNumber());
         // Try to send this request to the Scheduler
         //requestQueue.put(newRequest);
         requestQueue.putInRequestBox(newRequest);
-        System.out.println("Floor " + floorNumber + ": Request for " + (buttonDirection ? "UP" : "DOWN") + " button pushed.");
+        //System.out.println("Floor " + floorNumber + ": Request for " + (buttonDirection ? "UP" : "DOWN") + " button pushed.");
         this.waiting = true; // The floor is now waiting for an elevator
         //Change this, it is temporary
         return true;

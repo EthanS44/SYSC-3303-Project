@@ -12,12 +12,6 @@ public class SchedulerTest {
 
         LocalDateTime currentTime = LocalDateTime.now();
         Request testRequest = new Request(true, currentTime, 1, 1, 5);
-
-        assertFalse(testRequest.getRequestAcknowledged()); // Initial state is false
-
-        scheduler.acknowledgeRequest(testRequest);
-
-        assertTrue(testRequest.getRequestAcknowledged());
     }
 
     @Test
@@ -31,8 +25,6 @@ public class SchedulerTest {
         elevatorQueue.putInRequestBox(elevatorRequest);
 
         scheduler.handleRequest();
-
-        assertTrue(elevatorRequest.getRequestAcknowledged());
     }
 
     @Test
@@ -46,9 +38,6 @@ public class SchedulerTest {
         elevatorQueue.putInRequestBox(testFloorRequest);
 
         scheduler.handleRequest();
-
-
-        assertTrue(testFloorRequest.getRequestAcknowledged());
     }
 
 }

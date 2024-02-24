@@ -23,7 +23,6 @@ public class Request {
         this.indexNumber = indexNumber;
         this.buttonId = buttonId;
         this.currentFloor = currentFloor;
-        requestAcknowledged = false;
     }
 
     /**
@@ -64,19 +63,4 @@ public class Request {
      */
     public int getCurrentFloor() {return currentFloor;}
 
-    /**
-     * Setter for requestAcknowledged
-     * @param requestAcknowledged - True for if request was acknowledged, false if it wasnt
-     */
-    public void setRequestAcknowledged(boolean requestAcknowledged) {
-        this.requestAcknowledged = requestAcknowledged;
-    }
-
-    /**
-     * Getter for acknowledge request
-     * @return - true if acknowledged, false if not acknowledged
-     */
-    public boolean getRequestAcknowledged(){
-        return requestAcknowledged;
-    }
 }

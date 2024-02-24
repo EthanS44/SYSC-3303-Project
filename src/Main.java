@@ -9,6 +9,7 @@ public class Main {
         //create scheduler thread
         Thread schedulerThread = new Thread(new Scheduler(elevatorQueue), "Elevator Scheduler");
 
+
         //create floor threads
         Thread firstFloor = new Thread(new Floor(1, elevatorQueue), "First Floor");
         Thread secondFloor = new Thread(new Floor(2, elevatorQueue), "Second Floor");

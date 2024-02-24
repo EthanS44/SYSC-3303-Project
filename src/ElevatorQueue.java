@@ -43,7 +43,7 @@ public class ElevatorQueue {
         // Does not need a check as requestBox is never full
         requestBox.add(request);
         requestBoxEmpty = false;
-        System.out.println("Request put in box\n");
+        //System.out.println("Request put in box, current size: " + requestBox.size() + "\n");
         notifyAll();
     }
 
@@ -69,7 +69,7 @@ public class ElevatorQueue {
         if (requestBox.isEmpty()) {
             requestBoxEmpty = true;
         }
-        System.out.println("Request taken from box by scheduler\n");
+        System.out.println("Request taken from box by scheduler, current size: " + requestBox.size() + "\n");
         notifyAll();
         return request;
     }
@@ -82,6 +82,7 @@ public class ElevatorQueue {
         instructionBox.add(instruction);
         instructionBoxEmpty = false;
         notifyAll();
+        System.out.println("Instruction put in box, current size: " + instructionBox.size() + "\n");
     }
 
     /**
@@ -107,6 +108,7 @@ public class ElevatorQueue {
             instructionBoxEmpty = true;
         }
         notifyAll();
+        System.out.println("Instruction taken from box, current size: " + instructionBox.size() + "\n");
 
         return instruction;
     }

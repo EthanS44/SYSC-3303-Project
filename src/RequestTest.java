@@ -25,14 +25,4 @@ public class RequestTest {
         assertEquals(3, floorRequest.getCurrentFloor());
 
     }
-
-    @Test
-    public void testSetAndGetAcknowledge(){
-        LocalDateTime currentTime = LocalDateTime.now();
-        Request request = new Request(true, currentTime, 1, 1, 3);
-
-        assertFalse(request.getRequestAcknowledged()); // Initial state is false
-        request.setRequestAcknowledged(true);
-        assertTrue(request.getRequestAcknowledged());
-    }
 }

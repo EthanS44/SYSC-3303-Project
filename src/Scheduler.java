@@ -5,10 +5,11 @@ import java.util.ArrayList;
 class ElevatorWaiting implements schedulerState {
     @Override
     public void handle(Scheduler scheduler){
+        System.out.println("Is request box empty: " + scheduler.noPendingRequests());
 
-
-        if (scheduler.hasPendingRequests()) {
+        if (!scheduler.noPendingRequests()){
             scheduler.setCurrentState(new HandlingRequest());
+            System.out.println("Scheduler state changed to HandlingRequest\n");
         }
     }
 
@@ -20,11 +21,6 @@ class HandlingRequest implements schedulerState{
         scheduler.setCurrentState(new ElevatorWaiting());
     }
 }
-public class Scheduler implements Runnable {
-    private static final int numberOfFloors = 7;
-    private final ElevatorQueue elevatorqueue;
-    private schedulerState currentState; //new
-
 
     public Scheduler(ElevatorQueue queue){
         this.elevatorqueue = queue;
@@ -79,8 +75,13 @@ public class Scheduler implements Runnable {
         acknowledgeRequest(requestToHandle);
         System.out.println("Request handled");
     }
-    public boolean hasPendingRequests() {
+
+    public boolean noPendingRequests() {
         return elevatorqueue.isRequestBoxEmpty();
+    }
+
+    public boolean noPendingResponses(){
+        return elevatorqueue.isResponseBoxEmpty();
     }
 
 

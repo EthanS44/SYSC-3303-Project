@@ -9,8 +9,6 @@ class ElevatorWaiting implements schedulerState {
 
         if (scheduler.hasPendingRequests()) {
             scheduler.setCurrentState(new HandlingRequest());
-        } else {
-            System.out.println("No pending requests. Waiting...");
         }
     }
 
@@ -94,5 +92,4 @@ public class Scheduler implements Runnable {
             request();
         }
     }
-
 }

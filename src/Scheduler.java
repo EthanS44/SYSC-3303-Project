@@ -6,6 +6,7 @@ public class Scheduler implements Runnable {
     private final ElevatorQueue elevatorqueue;
     private schedulerState currentState; //new
     private ArrayList<Floor> floors;
+    private ArrayList<Request> requestBox;
 
 class SchedulerWaiting implements schedulerState {
     @Override

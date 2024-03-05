@@ -83,6 +83,7 @@ public class Elevator implements Runnable {
     private boolean doorOpen;
     private ElevatorState currentState;
     private ArrayList<ElevatorButton> buttonList;
+    private ArrayList<Instruction> instructionBox;
 
     /**
      * Constructor for Elevator

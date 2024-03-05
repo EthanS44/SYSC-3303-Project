@@ -1,5 +1,6 @@
 // the Request class is essentially analogous to a Packet, this is the structure that the elevators and floors will send to the scheduler.
 
+import java.io.*;
 import java.time.LocalDateTime;
 public class Request {
     private final boolean isElevator; // true for elevator, false for floor
@@ -63,4 +64,16 @@ public class Request {
      */
     public int getCurrentFloor() {return currentFloor;}
 
+    public byte[] toByteArray(Request request) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(this);
+        objectOutputStream.flush();
+        return byteArrayOutputStream.toByteArray();
+    }
+    public Request toRequest(byte[] byteArray) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
+        ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+        return (Request) objectInputStream.readObject();
+    }
 }

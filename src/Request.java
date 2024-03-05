@@ -2,7 +2,7 @@
 
 import java.io.*;
 import java.time.LocalDateTime;
-public class Request {
+public class Request implements Serializable {
     private final boolean isElevator; // true for elevator, false for floor
     private final LocalDateTime time; // time the button was pushed
     private final int indexNumber; // floor/elevator index number

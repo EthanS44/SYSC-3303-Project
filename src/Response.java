@@ -1,6 +1,6 @@
 import java.io.*;
 
-public class Response {
+public class Response implements Serializable {
 
     private int floorNumber; //floor number that the elevator has arrived to
 

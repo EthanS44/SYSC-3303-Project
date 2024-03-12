@@ -1,84 +1,84 @@
-import java.util.concurrent.BlockingQueue;
-import java.time.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.time.LocalDateTime;
 
 public class Floor implements Runnable {
 
-
-    private ElevatorQueue elevatorqueue;
     private int floorNumber;
     private boolean waiting;
-    // private final BlockingQueue<Request> requestQueue; // Assuming a shared request queue for communication
-    private ElevatorQueue requestQueue;
+    private DatagramSocket sendSocket;
+    private InetAddress schedulerAddress;
+    private final int schedulerPort = 41; // Port where the scheduler is listening
+
     private FloorButton upButton, downButton;
     private FloorLamp upLamp, downLamp;
 
-    /**
-     * Constructor for the floor class
-     * @param floorNumber - specific floor
-     * @param queue - Shared queue to feed requests to the scheduler
-     */
-    public Floor(int floorNumber, ElevatorQueue queue) { // BlockingQueue<Request> requestQueue) {
-        System.out.println("Floor "+ floorNumber + " been created");
-
+    public Floor(int floorNumber) {
         this.floorNumber = floorNumber;
         this.waiting = false;
-        this.requestQueue = queue;
+        try {
+            this.sendSocket = new DatagramSocket();
+            this.schedulerAddress = InetAddress.getLocalHost(); // Assuming scheduler is on the same machine
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
         upButton = new FloorButton(1);
         downButton = new FloorButton(0);
         upLamp = new FloorLamp();
         downLamp = new FloorLamp();
+
+        System.out.println("Floor " + floorNumber + " has been created");
     }
 
-    /**
-     * Getter for the isWaiting variable
-     * @return - True = waiting, False = not waiting
-     */
-    public boolean isWaiting(){
+    public boolean isWaiting() {
         return waiting;
     }
 
-    /**
-     * Getter for the floor number
-     * @return - Floor number
-     */
     public int getFloorNumber() {
         return floorNumber;
     }
 
-    /**
-     * When a button is pushed this function puts a request into the request box
-     * @param buttonDirection - What direction the user wants to go
-     * @return - true if the request has went through
-     */
-    public boolean pushButton(boolean buttonDirection){
-        // converts the buttonDirection to buttonID (0 = down and 1 = up)
+    public boolean pushButton(boolean buttonDirection) {
         int buttonId = buttonDirection ? 1 : 0;
-        switch (buttonId){
-            case 0:
-                downButton.pressButton();
-                downLamp.turnOnLamp();
-                System.out.println("Down button pressed on floor "+floorNumber);
-            case 1:
-                upButton.pressButton();
-                upLamp.turnOnLamp();
-                System.out.println("Up button pressed on floor "+floorNumber);
-        }
         LocalDateTime currentTime = LocalDateTime.now();
-        // Create a new request with the current time, floor number, and button direction
-        Request newRequest = new Request(false, currentTime , floorNumber, buttonId, getFloorNumber());
-        // Try to send this request to the Scheduler
-        //requestQueue.put(newRequest);
-        requestQueue.putInRequestBox(newRequest);
-        //System.out.println("Floor " + floorNumber + ": Request for " + (buttonDirection ? "UP" : "DOWN") + " button pushed.");
-        this.waiting = true; // The floor is now waiting for an elevator
-        //Change this, it is temporary
-        return true;
+        Request newRequest = new Request(false, currentTime, floorNumber, buttonId, floorNumber);
+
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(newRequest);
+            byte[] requestData = baos.toByteArray();
+
+            DatagramPacket sendPacket = new DatagramPacket(requestData, requestData.length, schedulerAddress, schedulerPort);
+            sendSocket.send(sendPacket);
+            this.waiting = true;
+            System.out.println("Floor " + floorNumber + ": Request for " + (buttonDirection ? "UP" : "DOWN") + " button pushed and sent.");
+
+            // Update lamp status based on the button pressed
+            if (buttonDirection) {
+                upLamp.turnOnLamp();
+                System.out.println("Up lamp turned on at floor " + floorNumber);
+            } else {
+                downLamp.turnOnLamp();
+                System.out.println("Down lamp turned on at floor " + floorNumber);
+            }
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
-
-
 
     @Override
     public void run() {
+        // Example: Automatically push the up button on floor 2 upon startup
         if (floorNumber == 2) {
             pushButton(true);
         }

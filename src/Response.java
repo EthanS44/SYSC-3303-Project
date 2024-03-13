@@ -19,7 +19,7 @@ public class Response implements Serializable {
         objectOutputStream.flush();
         return byteArrayOutputStream.toByteArray();
     }
-    public Response toResponse(byte[] byteArray) throws IOException, ClassNotFoundException {
+    public static Response toResponse(byte[] byteArray) throws IOException, ClassNotFoundException {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
         ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
         return (Response) objectInputStream.readObject();

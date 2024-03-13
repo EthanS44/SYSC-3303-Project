@@ -21,7 +21,8 @@ public class Main {
         Thread eighthFloor = new Thread(new Floor(8, elevatorQueue), "Eighth Floor");
 
         //create elevator thread
-        Thread elevatorThread = new Thread(new Elevator(1, elevatorQueue), "Elevator");
+        Thread elevatorThread = new Thread(new Elevator(1, 30, 50), "Elevator");
+        Thread elevatorThread2 = new Thread(new Elevator(2, 31, 51), "Elevator 2");
 
         //start threads
         schedulerThread.start();
@@ -36,6 +37,6 @@ public class Main {
         eighthFloor.start();
 
         elevatorThread.start();
-
+        elevatorThread2.start();
     }
 }

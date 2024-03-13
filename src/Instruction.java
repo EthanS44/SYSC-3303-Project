@@ -37,7 +37,7 @@ public class Instruction implements Serializable {
         objectOutputStream.flush();
         return byteArrayOutputStream.toByteArray();
     }
-    public Instruction toInstruction(byte[] byteArray) throws IOException, ClassNotFoundException {
+    public static Instruction toInstruction(byte[] byteArray) throws IOException, ClassNotFoundException {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
         ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
         return (Instruction) objectInputStream.readObject();

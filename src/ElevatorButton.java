@@ -8,12 +8,12 @@ public class ElevatorButton {
         this.buttonNo = buttonNumber;
     }
 
-    public void pushButton() {
+    public Request pushButton() {
         System.out.println("Elevator button " + buttonNo + " pushed!");
         LocalDateTime currentTime = LocalDateTime.now();
         Request request = new Request(true, currentTime, this.elevator.getElevatorID(), buttonNo, this.elevator.getCurrentFloor());
-        this.elevator.getElevatorQueue().putInRequestBox(request);
         System.out.println("Request sent by ElevatorButton "+ buttonNo);
+        return request;
     }
 
     public int getButtonNo() {

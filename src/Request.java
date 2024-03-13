@@ -71,7 +71,7 @@ public class Request implements Serializable {
         objectOutputStream.flush();
         return byteArrayOutputStream.toByteArray();
     }
-    public Request toRequest(byte[] byteArray) throws IOException, ClassNotFoundException {
+    public static Request toRequest(byte[] byteArray) throws IOException, ClassNotFoundException {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
         ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
         return (Request) objectInputStream.readObject();

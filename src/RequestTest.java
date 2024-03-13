@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,5 +25,20 @@ public class RequestTest {
         assertEquals(1, floorRequest.getButtonId());
         assertEquals(3, floorRequest.getCurrentFloor());
 
+    }
+    @Test
+    public void testSerialization() throws IOException, ClassNotFoundException {
+        LocalDateTime currentTime = LocalDateTime.now();
+        Request request = new Request(false, currentTime, 1, 1, 1);
+        Request request2 = null;
+        try {
+            byte[] bytes = Request.toByteArray(request);
+            request2 = Request.toRequest(bytes);
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Exception");
+        }
+
+        assertEquals(request2.getButtonId(), request.getButtonId());
+        assertEquals(request2.getIndexNumber(), request.getIndexNumber());
     }
 }

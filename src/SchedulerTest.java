@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SchedulerTest {
     @Test
     public void testAcknowledgeRequest() {
-        ElevatorQueue elevatorQueue = new ElevatorQueue();
-        Scheduler scheduler = new Scheduler(elevatorQueue);
+        // ElevatorQueue elevatorQueue = new ElevatorQueue();
+        Scheduler scheduler = new Scheduler();
 
         LocalDateTime currentTime = LocalDateTime.now();
         Request testRequest = new Request(true, currentTime, 1, 1, 5);
@@ -17,7 +17,7 @@ public class SchedulerTest {
     @Test
     public void testHandleRequestEleavtor() {
         ElevatorQueue elevatorQueue = new ElevatorQueue();
-        Scheduler scheduler = new Scheduler(elevatorQueue);
+        Scheduler scheduler = new Scheduler();
 
         LocalDateTime currentTime = LocalDateTime.now();
         Request elevatorRequest = new Request(true, currentTime, 1, 1, 5);
@@ -30,7 +30,7 @@ public class SchedulerTest {
     @Test
     public void testHandleRequestFloor() {
         ElevatorQueue elevatorQueue = new ElevatorQueue();
-        Scheduler scheduler = new Scheduler(elevatorQueue);
+        Scheduler scheduler = new Scheduler();
 
         LocalDateTime currentTime = LocalDateTime.now();
         Request testFloorRequest = new Request(false, currentTime, 2, 1, 3);

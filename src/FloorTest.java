@@ -8,7 +8,7 @@ public class FloorTest {
         ElevatorQueue elevatorQueue = new ElevatorQueue();
 
         // Test creating a floor and check its initial state
-        Floor floor = new Floor(3, elevatorQueue);
+        Floor floor = new Floor(3);
         assertEquals(3, floor.getFloorNumber());
         assertFalse(floor.isWaiting());
     }
@@ -16,7 +16,7 @@ public class FloorTest {
     @Test
     public void testButtonPushed() {
         ElevatorQueue elevatorQueue = new ElevatorQueue();
-        Floor floor = new Floor(5, elevatorQueue);
+        Floor floor = new Floor(5);
 
         // Test pressing the UP button on the floor
         assertTrue(floor.pushButton(true));
@@ -30,7 +30,7 @@ public class FloorTest {
     @Test
     public void testFloorNotWaitingInitially() {
         ElevatorQueue elevatorQueue = new ElevatorQueue();
-        Floor floor = new Floor(2, elevatorQueue);
+        Floor floor = new Floor(2);
 
         // The floor should not be waiting initially
         assertFalse(floor.isWaiting());

@@ -7,21 +7,22 @@ public class Main {
         ElevatorQueue elevatorQueue = new ElevatorQueue();
 
         //create scheduler thread
-        Thread schedulerThread = new Thread(new Scheduler(elevatorQueue), "Elevator Scheduler");
+        Thread schedulerThread = new Thread(new Scheduler(), "Elevator Scheduler");
 
 
         //create floor threads
-        Thread firstFloor = new Thread(new Floor(1, elevatorQueue), "First Floor");
-        Thread secondFloor = new Thread(new Floor(2, elevatorQueue), "Second Floor");
-        Thread thirdFloor = new Thread(new Floor(3, elevatorQueue), "Third Floor");
-        Thread fourthFloor = new Thread(new Floor(4, elevatorQueue), "Fourth Floor");
-        Thread fifthFloor = new Thread(new Floor(5, elevatorQueue), "Fifth Floor");
-        Thread sixthFloor = new Thread(new Floor(6, elevatorQueue), "Sixth Floor");
-        Thread seventhFloor = new Thread(new Floor(7, elevatorQueue), "Seventh Floor");
-        Thread eighthFloor = new Thread(new Floor(8, elevatorQueue), "Eighth Floor");
+        Thread firstFloor = new Thread(new Floor(1), "First Floor");
+        Thread secondFloor = new Thread(new Floor(2), "Second Floor");
+        Thread thirdFloor = new Thread(new Floor(3), "Third Floor");
+        Thread fourthFloor = new Thread(new Floor(4), "Fourth Floor");
+        Thread fifthFloor = new Thread(new Floor(5), "Fifth Floor");
+        Thread sixthFloor = new Thread(new Floor(6), "Sixth Floor");
+        Thread seventhFloor = new Thread(new Floor(7), "Seventh Floor");
+        Thread eighthFloor = new Thread(new Floor(8), "Eighth Floor");
 
         //create elevator thread
-        Thread elevatorThread = new Thread(new Elevator(1, elevatorQueue), "Elevator");
+        Thread elevatorThread = new Thread(new Elevator(1, 30, 50), "Elevator");
+        Thread elevatorThread2 = new Thread(new Elevator(2, 31, 51), "Elevator 2");
 
         //start threads
         schedulerThread.start();
@@ -36,6 +37,6 @@ public class Main {
         eighthFloor.start();
 
         elevatorThread.start();
-
+        elevatorThread2.start();
     }
 }

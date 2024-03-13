@@ -1,4 +1,6 @@
-public class Instruction {
+import java.io.*;
+
+public class Instruction implements Serializable {
 
     private boolean direction; // Up = true, down = false
     private int floorNumber; // Just the floorNumber to go to
@@ -28,4 +30,16 @@ public class Instruction {
     public boolean getDirection(){
         return direction;
     }
+    public byte[] toByteArray(Instruction instruction) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(this);
+        objectOutputStream.flush();
+        return byteArrayOutputStream.toByteArray();
+    }
+    public static Instruction toInstruction(byte[] byteArray) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
+        ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+        return (Instruction) objectInputStream.readObject();
+    } // Instruction.toInstruction(byte[]) will return the instruction represented by the byte array
 }

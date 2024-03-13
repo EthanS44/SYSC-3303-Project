@@ -5,10 +5,10 @@ public class Main {
 
         // create an elevator queue object
         ElevatorQueue elevatorQueue = new ElevatorQueue();
-
+        // create a request instead
         //create scheduler thread
-        Thread schedulerThread = new Thread(new Scheduler(elevatorQueue), "Elevator Scheduler");
-
+        //Thread schedulerThread = new Thread(new Scheduler(elevatorQueue), "Elevator Scheduler");
+        Thread schedulerThread = new Thread(new Scheduler(), "Elevator Scheduler");
 
         //create floor threads
         Thread firstFloor = new Thread(new Floor(1, elevatorQueue), "First Floor");

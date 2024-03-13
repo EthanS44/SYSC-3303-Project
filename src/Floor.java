@@ -82,5 +82,14 @@ public class Floor implements Runnable {
         if (floorNumber == 4){
             pushButton(true);
         }
+        if (floorNumber == 1){
+            pushButton(true);
+        }
+        if (floorNumber == 3){
+            pushButton(true);
+        }
+        if (floorNumber == 2){
+            pushButton(true);
+        }
     }
 }

@@ -51,6 +51,7 @@ class ElevatorMoving implements ElevatorState {
         int oldFloor = elevator.getCurrentFloor();
 
         // go to next floor
+        elevator.getMotor().startMotor();
         while(elevator.getNextFloor() != elevator.getCurrentFloor()) {
             //If statement for the elevator to go up
             if(elevator.getNextFloor() > elevator.getCurrentFloor()) {
@@ -70,6 +71,8 @@ class ElevatorMoving implements ElevatorState {
             }
         }
         System.out.println("Arrived at floor " + elevator.getCurrentFloor());
+        // stop elevator motor
+        elevator.getMotor().stop();
 
         // set state to door handling
         elevator.setCurrentState(new ElevatorHandlingDoor());
@@ -173,6 +176,12 @@ public class Elevator implements Runnable {
             addButton(newButton);
             newButton.setElevator(this);
         }
+
+        // adds an arrival sensor for each floor
+        for (int i = 1; i <= 7; i++){
+            ArrivalSensor newSensor = new ArrivalSensor(i, this);
+            arrivalSensors.add(newSensor);
+        }
     }
     /**
      * Getter for the elevator ID
@@ -180,6 +189,10 @@ public class Elevator implements Runnable {
      */
     public int getElevatorID() {
         return elevatorID;
+    }
+
+    public ElevatorMotor getMotor(){
+        return motor;
     }
 
     /**
@@ -366,8 +379,8 @@ public class Elevator implements Runnable {
             Thread.currentThread().interrupt(); // Reset interrupt status
             System.out.println("Failed to handle instruction" );
         }
-
-        this.buttonList.get(2).pushButton();
+/*
+        //this.buttonList.get(2).pushButton();
 
         try {
             Thread.sleep(3000);
@@ -376,8 +389,8 @@ public class Elevator implements Runnable {
             System.out.println("Failed to handle instruction" );
         }
 
-        this.buttonList.get(1).pushButton();
-
+        //this.buttonList.get(1).pushButton();
+*/
         while(true){
             request();
 

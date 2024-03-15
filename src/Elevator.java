@@ -10,13 +10,12 @@ class ElevatorWaiting implements ElevatorState {
     public void handle(Elevator elevator) {
         System.out.println("Elevator: Changed to Waiting State");
 
-        for (int i = 0; i < 1; i++) {
             try {
                 elevator.receiveInstructionFromScheduler();
             } catch (IOException | ClassNotFoundException e) {
                 System.out.println("Elevator " + elevator.getElevatorID() + ": Error executing Instruction");
             }
-        }
+
 
         /*try{
             while(true){
@@ -342,7 +341,7 @@ public class Elevator implements Runnable {
         }
     }
     public void receiveInstructionFromScheduler() throws IOException, ClassNotFoundException {
-        System.out.println("this method was called");
+
         byte[] data = new byte[200];
         DatagramPacket packetToReceive = null;
 
@@ -352,11 +351,17 @@ public class Elevator implements Runnable {
 
         // receive data
         try {
-            System.out.println("Starting reception process");
+            receiveSocket.setSoTimeout(1);
             receiveSocket.receive(packetToReceive);
             System.out.println("Elevator " + this.elevatorID + " Received Instruction from Scheduler");
+        } catch (SocketTimeoutException e) {
+            // Handle timeout: No packet was received within the specified timeout
+            //System.err.println("Timeout occurred: " + e.getMessage());
+            return;
         } catch (IOException e) {
-            System.out.println("IOException");
+            // Handle other IOExceptions
+            //System.err.println("IOException occurred: " + e.getMessage());
+            return;
         }
 
         // Turn data into instruction
@@ -371,15 +376,18 @@ public class Elevator implements Runnable {
     public void run(){
 
         // Push buttons 4, 7 and 2, then handle the requests
-        this.buttonList.get(6).pushButton();
+        if(elevatorID == 1){
+            this.buttonList.get(6).pushButton();
+        }
 
+/*
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Reset interrupt status
             System.out.println("Failed to handle instruction" );
         }
-/*
+
         //this.buttonList.get(2).pushButton();
 
         try {

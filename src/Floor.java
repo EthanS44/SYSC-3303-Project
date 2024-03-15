@@ -76,9 +76,11 @@ public class Floor implements Runnable {
     @Override
     public void run() {
         // Example: Automatically push the up button on floor 2 upon startup
+
         if (floorNumber == 5){
             pushButton(true);
         }
+        /*
         if (floorNumber == 4){
             pushButton(true);
         }
@@ -91,5 +93,7 @@ public class Floor implements Runnable {
         if (floorNumber == 2){
             pushButton(true);
         }
+
+         */
     }
 }

@@ -12,11 +12,12 @@ import java.util.Arrays;
 
 public class Scheduler implements Runnable {
     private static final int numberOfFloors = 7;
-    //private final ElevatorQueue elevatorqueue;
     private schedulerState currentState; //new
     private ArrayList<Floor> floors;
     private ArrayList<Request> requestBox;
     private ArrayList<Response> responseBox;
+
+    private int elevatorPosition1, elevatorPosition2, elevatorPosition3;
 
 
     DatagramSocket receiveSocket;
@@ -27,6 +28,9 @@ public class Scheduler implements Runnable {
         this.responseBox = new ArrayList<Response>();
         //this.elevatorqueue = queue;
         this.currentState = new SchedulerWaiting(); //new
+        this.elevatorPosition1 = 1;
+        this.elevatorPosition2 = 1;
+        this.elevatorPosition3 = 1;
         System.out.println("Scheduler created\n");
 
         // creates 2 sockets
@@ -50,12 +54,10 @@ public class Scheduler implements Runnable {
             System.out.println("Is request box empty: " + scheduler.noPendingRequests());
             System.out.println("Size of request box: " + requestBox.size());
             receiveRequest();
-
             if (!scheduler.noPendingRequests()){
                 scheduler.setCurrentState(new HandlingRequest());
                 System.out.println("Scheduler state changed to HandlingRequest\n");
             }
-
 
 
             if (!scheduler.noPendingResponses()){
@@ -200,10 +202,18 @@ public class Scheduler implements Runnable {
 
         // Receive request packet
         try {
+            receiveSocket.setSoTimeout(1);
             receiveSocket.receive(packetToReceive); //getting stuck here when there is a request
             System.out.println("\nScheduler: Request received");
-        } catch(IOException e) {
-            System.out.println("IOException");
+            // If a packet is received, process it
+        } catch (SocketTimeoutException e) {
+            // Handle timeout: No packet was received within the specified timeout
+            //System.err.println("Timeout occurred: " + e.getMessage());
+            return;
+        } catch (IOException e) {
+            // Handle other IOExceptions
+            //System.err.println("IOException occurred: " + e.getMessage());
+            return;
         }
 
         //convert the received packet to bytes.

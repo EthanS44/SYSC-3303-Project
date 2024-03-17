@@ -3,6 +3,7 @@ import java.time.LocalDateTime;
 public class ElevatorButton {
     private final int buttonNo;
     private Elevator elevator;
+    private boolean pressed;
 
     public ElevatorButton(int buttonNumber) {
         this.buttonNo = buttonNumber;
@@ -22,5 +23,9 @@ public class ElevatorButton {
 
     public void setElevator(Elevator elevator) {
         this.elevator = elevator;
+    }
+
+    public boolean isPressed() {
+        return pressed;
     }
 }

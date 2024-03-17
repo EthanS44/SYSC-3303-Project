@@ -11,7 +11,7 @@ public class ElevatorQueueTest {
         LocalDateTime currentTime = LocalDateTime.now();
 
         // Test putting a request into the request box
-        Request testRequest = new Request(false, currentTime, 1, 1, 1);
+        Request testRequest = new Request(false, currentTime, 1, 1, 1, 1);
         elevatorQueue2.putInRequestBox(testRequest);
         //assert that request box is not empty
         assertFalse(elevatorQueue2.isRequestBoxEmpty());

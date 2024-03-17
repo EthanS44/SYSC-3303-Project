@@ -14,13 +14,17 @@ public class Scheduler implements Runnable {
     private static final int numberOfFloors = 7;
     //private final ElevatorQueue elevatorqueue;
     private schedulerState currentState; //new
-    private ArrayList<Floor> floors;
     private ArrayList<Request> requestBox;
     private ArrayList<Response> responseBox;
+    private int elevatorSendPort;
+    private int elevator1Position, elevator2Position, elevator3Position;
+    private int elevator1Direction, elevator2Direction, elevator3Direction; // 1 is up 0 is down
 
 
     DatagramSocket receiveSocket;
     DatagramSocket sendReceiveSocket;
+    DatagramSocket responseSocket;
+
 
     public Scheduler(){
         this.requestBox = new ArrayList<Request>();
@@ -28,6 +32,16 @@ public class Scheduler implements Runnable {
         //this.elevatorqueue = queue;
         this.currentState = new SchedulerWaiting(); //new
         System.out.println("Scheduler created\n");
+
+        //set elevator starting positions to floor 1
+        this.elevator1Position = 1;
+        this.elevator2Position = 1;
+        this.elevator3Position = 1;
+
+        //set elevator starting directions to up
+        this.elevator1Direction = 1;
+        this.elevator2Direction = 1;
+        this.elevator3Direction = 1;
 
         // creates 2 sockets
         try {
@@ -42,26 +56,26 @@ public class Scheduler implements Runnable {
             se.printStackTrace();
             System.exit(1);
         }
+        try {
+            responseSocket = new DatagramSocket(70);
+        } catch (SocketException se) {
+            se.printStackTrace();
+            System.exit(1);
+        }
+        this.elevatorSendPort = 52;
     }
 
     class SchedulerWaiting implements schedulerState {
         @Override
         public void handle(Scheduler scheduler){
-            System.out.println("Is request box empty: " + scheduler.noPendingRequests());
-            System.out.println("Size of request box: " + requestBox.size());
+
+            scheduler.receiveResponse();
             receiveRequest();
+
 
             if (!scheduler.noPendingRequests()){
                 scheduler.setCurrentState(new HandlingRequest());
                 System.out.println("Scheduler state changed to HandlingRequest\n");
-            }
-
-
-
-            if (!scheduler.noPendingResponses()){
-                Response response = scheduler.responseBox.get(0);
-                responseBox.remove(response);
-                System.out.println("Scheduler received response from floor " + response.getFloorNumber() + "\n");
             }
         }
 
@@ -69,6 +83,8 @@ public class Scheduler implements Runnable {
     class HandlingRequest implements schedulerState{
         @Override
         public void handle(Scheduler scheduler){
+            //update elevator positions
+            scheduler.receiveResponse();
             System.out.println("calling handle request");
             scheduler.handleRequest();
             scheduler.setCurrentState(new SchedulerWaiting());
@@ -93,6 +109,8 @@ public class Scheduler implements Runnable {
         //Request requestToHandle = elevatorqueue.getFromRequestBox();
         // System.out.println("Request received by scheduler, now handling\n");
         // Check if there are requests in the requestBox
+        receiveResponse();
+
         if (requestBox.isEmpty()) {
             System.out.println("No requests to handle.");
             return;
@@ -101,7 +119,7 @@ public class Scheduler implements Runnable {
         // not sure if it should Iterate over the ArrayList of requests
         // for (Request requestToHandle : requestBox) {
         Request requestToHandle = requestBox.get(0);
-        System.out.println("Request received by scheduler, now handling\n");
+        System.out.println("Scheduler handling request from request box\n");
 
         //This is for gathering information about what will be in the instruction
         boolean tempDirection;
@@ -124,13 +142,14 @@ public class Scheduler implements Runnable {
             }
             tempFloorNumber = requestToHandle.getIndexNumber();
         }
+        receiveResponse();
         //Convert to packet and send instruction
         sendInstructionToElevator(new Instruction(tempDirection, tempFloorNumber));
-        //elevatorqueue.putInInstructionBox(new Instruction(tempDirection,tempFloorNumber));
         System.out.println("Scheduler: Request handled");
         // remove request from requestBox
         requestBox.remove(requestToHandle);
 
+        receiveResponse();
     }
 
     public boolean noPendingRequests() {
@@ -146,12 +165,27 @@ public class Scheduler implements Runnable {
      * @param instruction
      */
     public void sendInstructionToElevator(Instruction instruction){
+        receiveResponse();
+        //decide which elevator should get the instruction
+        int closestElevator = getClosestElevator(instruction.getFloorNumber());
+        switch(closestElevator){
+            case(1):
+                elevatorSendPort = 50;
+                break;
+            case(2):
+                elevatorSendPort = 51;
+                break;
+            case(3):
+                elevatorSendPort = 52;
+                break;
+        }
+
         // send packet to Elevator
         try {
             // Serialize instruction object to bytes
             byte[] instructionBytes = instruction.toByteArray(instruction);
             // Create UDP packet with instruction bytes, destination IP, and port
-            DatagramPacket packet = new DatagramPacket(instructionBytes, instructionBytes.length, InetAddress.getLocalHost(), 50);
+            DatagramPacket packet = new DatagramPacket(instructionBytes, instructionBytes.length, InetAddress.getLocalHost(), elevatorSendPort); //its just sending to elevator 1 for now
 
             sendReceiveSocket.send(packet);
             System.out.println("Scheduler: Instruction sent to Elevator.\n");
@@ -159,35 +193,90 @@ public class Scheduler implements Runnable {
             e.printStackTrace();
             System.exit(1);
         }
-
-        // Receive response packet from Elevator
-        byte[] data = new byte[200];
-        DatagramPacket packetToReceive = new DatagramPacket(data, data.length);
-
-        try {
-            sendReceiveSocket.receive(packetToReceive);
-        } catch(IOException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-        //collect the received packet and convert it to response
-        Response response;
-        try {
-            response = Response.toResponse(packetToReceive.getData());
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return;
-        }
-        responseBox.add(response);
-
     }
+
+   public void receiveResponse(){ //updates elevator positions and directions and send to floor to turn off lamps and buttons
+
+       // Receive response packet from Elevator
+           byte[] data = new byte[200];
+           DatagramPacket packetToReceive = new DatagramPacket(data, data.length);
+
+           try {
+               responseSocket.setSoTimeout(1);
+               responseSocket.receive(packetToReceive);
+           } catch (SocketTimeoutException e) {
+               //System.out.println("Timeout Exception"); // Handles SocketTimeoutException if no packet is received within the specified timeout
+               return;
+           } catch (IOException e) {
+               //System.out.println("IOException"); // Handles IOException if any occurs during receive operation
+               return;
+           }
+
+           System.out.println("Scheduler Receiving response");
+           //collect the received packet and convert it to response
+           Response response;
+           try {
+               response = Response.toResponse(packetToReceive.getData());
+           } catch (IOException | ClassNotFoundException e) {
+               System.out.println("Scheduler: IOException");
+               return;
+           }
+
+           //update elevator directions and positions
+           switch (response.getElevatorID()) {
+               case (1):
+                   elevator1Position = response.getFloorNumber();
+                   elevator1Direction = response.getCurrentDirection();
+                   break;
+               case (2):
+                   elevator2Position = response.getFloorNumber();
+                   elevator2Direction = response.getCurrentDirection();
+                   break;
+               case (3):
+                   elevator3Position = response.getFloorNumber();
+                   elevator3Direction = response.getCurrentDirection();
+                   break;
+           }
+           System.out.println("Elevator " + response.getElevatorID() + " position updated to floor " + getElevatorPosition(response.getElevatorID()) + " and direction to " + getElevatorDirection(response.getElevatorID()));
+
+           //relay response to floor if elevator is stopping there, this is to turn off floor buttons and lamps
+           if (response.isStoppingAtFloor()){
+               sendResponse(response);
+           }
+   }
+
+   public void sendResponse(Response response){
+       DatagramPacket newPacket = null;
+       try {
+
+           // Serialize instruction object to bytes
+           byte[] responseBytes = response.toByteArray(response);
+
+           // Create UDP packet with instruction bytes, destination IP, and port
+
+           newPacket = new DatagramPacket(responseBytes , responseBytes.length, InetAddress.getLocalHost(), response.getFloorNumber());
+       } catch (UnknownHostException e) {
+           e.printStackTrace();
+           System.exit(1);
+       } catch (IOException e) {
+           throw new RuntimeException(e);
+       }
+
+       // Sending response packet
+       try {
+           sendReceiveSocket.send(newPacket);
+           System.out.println("Scheduler sent response to floor");
+       } catch (IOException e) {
+           e.printStackTrace();
+           System.exit(1);
+       }
+   }
+
 
     /**
      * This method receives packet and Converts the packet to a request
      * The request will be added to the request box
      */
-
     public void receiveRequest (){
 
         // Create new packet to hold received data
@@ -197,13 +286,17 @@ public class Scheduler implements Runnable {
 
         packetToReceive = new DatagramPacket(data, data.length);
 
-
         // Receive request packet
         try {
-            receiveSocket.receive(packetToReceive); //getting stuck here when there is a request
+            receiveSocket.setSoTimeout(1);
+            receiveSocket.receive(packetToReceive);
             System.out.println("\nScheduler: Request received");
-        } catch(IOException e) {
-            System.out.println("IOException");
+        } catch (SocketTimeoutException e) {
+            //System.out.println("Timeout Exception"); // Handles SocketTimeoutException if no packet is received within the specified timeout
+            return;
+        } catch (IOException e) {
+            //System.out.println("IOException"); // Handles IOException if any occurs during receive operation
+            return;
         }
 
         //convert the received packet to bytes.
@@ -211,44 +304,93 @@ public class Scheduler implements Runnable {
         try {
             request = Request.toRequest(packetToReceive.getData());
         } catch (IOException io) {
-            System.out.println("Empty or Invalid Request, IO Exception");
+            System.out.println("Scheduler: Empty or Invalid Request, IO Exception");
             return;
 
         } catch (ClassNotFoundException e) {
-            System.out.println("Empty or Invalid Request, Class not found");
+            System.out.println("Scheduler: Empty or Invalid Request, Class not found");
             return;
-
         }
 
+        //add request to request box
         requestBox.add(request);
         System.out.println("Scheduler: Request added to request box. Waiting to be handled.");
 
+        //Send acknowledgment for the received request
+        if (request.isElevator()) {
+            int elevatorID = request.getElevatorFloorID();
+            int sendPort = 0;
+            switch(elevatorID){
+                case(1):
+                    sendPort = 60;
+                    break;
+                case(2):
+                    sendPort = 61;
+                    break;
+                case(3):
+                    sendPort = 62;
+                    break;
+            }
+            try {
+                byte[] data2 = new byte[200];
+                DatagramPacket acknowledgementPacketToSend;
+                acknowledgementPacketToSend = new DatagramPacket(data2, data2.length, InetAddress.getLocalHost(), sendPort);
 
-        Response response = new Response(request.getCurrentFloor());
-        DatagramPacket newPacket = null;
-        try {
+                sendReceiveSocket.send(acknowledgementPacketToSend);
+                System.out.println("Scheduler: Acknowledgement sent to elevator " + request.getElevatorFloorID());
 
-            // Serialize instruction object to bytes
-            byte[] responseBytes = response.toByteArray(response);
-
-            // Create UDP packet with instruction bytes, destination IP, and port
-
-            newPacket = new DatagramPacket(responseBytes , responseBytes .length, InetAddress.getLocalHost(), packetToReceive.getPort());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            System.exit(1);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
         }
-
-        // Sending response packet
-        try {
-            sendReceiveSocket.send(newPacket);
-            System.out.println("Scheduler: Response packet sent");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(1);
+    }
+    // get the position of a specific elevator
+    private int getElevatorPosition(int elevatorNumber) {
+        switch (elevatorNumber) {
+            case 1:
+                return elevator1Position;
+            case 2:
+                return elevator2Position;
+            case 3:
+                return elevator3Position;
+            default:
+                return -1;
         }
+    }
+
+    // get the direction of a specific elevator
+    private int getElevatorDirection(int elevatorNumber) {
+        switch (elevatorNumber) {
+            case 1:
+                return elevator1Direction;
+            case 2:
+                return elevator2Direction;
+            case 3:
+                return elevator3Direction;
+            default:
+                return -1;
+        }
+    }
+    public int getClosestElevator(int floorNumber) {
+        int closestElevator = -1;
+        int minDistance = 8;
+
+        for (int i = 1; i <= 3; i++) {
+            int distance = Math.abs(getElevatorPosition(i) - floorNumber); // calculate distance to floor
+
+            // check if the elevator is pointing in the right direction
+            if ((getElevatorDirection(i) == 1 && floorNumber > getElevatorPosition(i)) ||
+                    (getElevatorDirection(i) == 0 && floorNumber < getElevatorPosition(i))) {
+                // check if the distance is smaller than the current minimum distance
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestElevator = i;
+                }
+            }
+        }
+        System.out.println("Elevator " + closestElevator + " is the closest");
+        return closestElevator;
     }
 
     @Override
@@ -257,7 +399,6 @@ public class Scheduler implements Runnable {
         while(true){
 
             request();
-
         }
     }
 }

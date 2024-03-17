@@ -28,5 +28,22 @@ public class ElevatorMotor {
     public void stop(){
         isRunning = false;
     }
+
+    public void changeDirection(){
+        if (currentDirection == 1){
+            currentDirection = 0;
+        }
+        else{
+            currentDirection = 1;
+        }
+    }
+
+    public int getCurrentSpeed() {
+        return currentSpeed;
+    }
+
+    public void setCurrentSpeed(int currentSpeed) {
+        this.currentSpeed = currentSpeed;
+    }
 }
 

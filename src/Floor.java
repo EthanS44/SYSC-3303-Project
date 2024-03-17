@@ -4,14 +4,17 @@ import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
 public class Floor implements Runnable {
 
     private int floorNumber;
+    private int port;
     private boolean waiting;
     private DatagramSocket sendSocket;
+    private DatagramSocket receiveSocket;
     private InetAddress schedulerAddress;
     private final int schedulerPort = 41; // Port where the scheduler is listening
     private FloorButton upButton, downButton;
@@ -20,8 +23,10 @@ public class Floor implements Runnable {
     public Floor(int floorNumber) {
         this.floorNumber = floorNumber;
         this.waiting = false;
+        this.port = floorNumber;
         try {
             this.sendSocket = new DatagramSocket();
+            this.receiveSocket = new DatagramSocket(port);
             this.schedulerAddress = InetAddress.getLocalHost(); // Assuming scheduler is on the same machine
         } catch (IOException e) {
             e.printStackTrace();
@@ -47,7 +52,7 @@ public class Floor implements Runnable {
     public boolean pushButton(boolean buttonDirection) {
         int buttonId = buttonDirection ? 1 : 0;
         LocalDateTime currentTime = LocalDateTime.now();
-        Request newRequest = new Request(false, currentTime, floorNumber, buttonId, floorNumber);
+        Request newRequest = new Request(false, currentTime, floorNumber, buttonId, floorNumber, floorNumber);
 
         try {
             byte[] requestData = Request.toByteArray(newRequest);
@@ -73,23 +78,67 @@ public class Floor implements Runnable {
         }
     }
 
+    public void resetButtons(Floor floor){// resets all buttons and lamps
+        floor.upLamp.turnOffLamp();
+        floor.downLamp.turnOffLamp();
+        floor.upButton.resetButton();
+        floor.downButton.resetButton();
+        System.out.println("Buttons and lamps reset at floor " + floorNumber);
+    }
+    public void handleButtons(Response response){
+        if(response.getFloorNumber()==this.floorNumber){
+            resetButtons(this);
+        }
+    }
+
+    public void receiveResponse(){
+        byte[] data = new byte[200];
+        DatagramPacket packetToReceive = new DatagramPacket(data, data.length);
+
+        try {
+            receiveSocket.setSoTimeout(1);
+            receiveSocket.receive(packetToReceive);
+        } catch (SocketTimeoutException e) {
+            //System.out.println("Timeout Exception"); // Handles SocketTimeoutException if no packet is received within the specified timeout
+            return;
+        } catch (IOException e) {
+            //System.out.println("IOException"); // Handles IOException if any occurs during receive operation
+            return;
+        }
+
+        System.out.println("Floor Receiving response");
+        //collect the received packet and convert it to response
+        Response response;
+        try {
+            response = Response.toResponse(packetToReceive.getData());
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Floor: IOException");
+            return;
+        }
+       resetButtons(this);
+    }
+
     @Override
     public void run() {
-        // Example: Automatically push the up button on floor 2 upon startup
-        if (floorNumber == 5){
-            pushButton(true);
-        }
+        // Push buttons
         if (floorNumber == 4){
             pushButton(true);
         }
-        if (floorNumber == 1){
+        if (floorNumber == 7){
             pushButton(true);
         }
-        if (floorNumber == 3){
+        if (floorNumber == 6){
             pushButton(true);
         }
-        if (floorNumber == 2){
-            pushButton(true);
+        int i = 0;
+        while(true){
+            i+=1;
+            if(i == 25000){
+                if (floorNumber == 2){
+                    pushButton(true);
+                }
+            }
+            receiveResponse();
         }
     }
 }

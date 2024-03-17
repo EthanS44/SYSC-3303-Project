@@ -11,7 +11,7 @@ public class SchedulerTest {
         Scheduler scheduler = new Scheduler();
 
         LocalDateTime currentTime = LocalDateTime.now();
-        Request testRequest = new Request(true, currentTime, 1, 1, 5);
+        Request testRequest = new Request(true, currentTime, 1, 1, 5, 5);
     }
 
     @Test
@@ -20,7 +20,7 @@ public class SchedulerTest {
         Scheduler scheduler = new Scheduler();
 
         LocalDateTime currentTime = LocalDateTime.now();
-        Request elevatorRequest = new Request(true, currentTime, 1, 1, 5);
+        Request elevatorRequest = new Request(true, currentTime, 1, 1, 5, 5);
 
         elevatorQueue.putInRequestBox(elevatorRequest);
 
@@ -33,7 +33,7 @@ public class SchedulerTest {
         Scheduler scheduler = new Scheduler();
 
         LocalDateTime currentTime = LocalDateTime.now();
-        Request testFloorRequest = new Request(false, currentTime, 2, 1, 3);
+        Request testFloorRequest = new Request(false, currentTime, 2, 1, 3, 3);
 
         elevatorQueue.putInRequestBox(testFloorRequest);
 

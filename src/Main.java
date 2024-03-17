@@ -9,7 +9,6 @@ public class Main {
         //create scheduler thread
         Thread schedulerThread = new Thread(new Scheduler(), "Elevator Scheduler");
 
-
         //create floor threads
         Thread firstFloor = new Thread(new Floor(1), "First Floor");
         Thread secondFloor = new Thread(new Floor(2), "Second Floor");
@@ -21,8 +20,9 @@ public class Main {
         Thread eighthFloor = new Thread(new Floor(8), "Eighth Floor");
 
         //create elevator thread
-        Thread elevatorThread = new Thread(new Elevator(1, 30, 50), "Elevator");
-        Thread elevatorThread2 = new Thread(new Elevator(2, 31, 51), "Elevator 2");
+        Thread elevatorThread = new Thread(new Elevator(1, 30, 50, 60), "Elevator");
+        Thread elevatorThread2 = new Thread(new Elevator(2, 31, 51, 61), "Elevator 2");
+        Thread elevatorThread3 = new Thread(new Elevator(3, 32, 52, 62), "Elevator 3");
 
         //start threads
         schedulerThread.start();
@@ -38,5 +38,6 @@ public class Main {
 
         elevatorThread.start();
         elevatorThread2.start();
+        elevatorThread3.start();
     }
 }

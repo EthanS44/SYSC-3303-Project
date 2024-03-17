@@ -10,7 +10,7 @@ public class RequestTest {
     public void testRequestGetters() {
         // Test creating a request from an elevator button press
         LocalDateTime currentTime = LocalDateTime.now();
-        Request elevatorRequest = new Request(true, currentTime, 1, 4, 5);
+        Request elevatorRequest = new Request(true, currentTime, 1, 4, 5, 5);
         assertTrue(elevatorRequest.isElevator());
         assertEquals(currentTime, elevatorRequest.getTime());
         assertEquals(4, elevatorRequest.getButtonId());
@@ -18,7 +18,7 @@ public class RequestTest {
 
 
         // Test creating a request from a floor button press
-        Request floorRequest = new Request(false, currentTime, 2, 1, 3);
+        Request floorRequest = new Request(false, currentTime, 2, 1, 3, 3);
         assertFalse(floorRequest.isElevator());
         assertEquals(currentTime, floorRequest.getTime());
         assertEquals(2, floorRequest.getIndexNumber());
@@ -29,7 +29,7 @@ public class RequestTest {
     @Test
     public void testSerialization() throws IOException, ClassNotFoundException {
         LocalDateTime currentTime = LocalDateTime.now();
-        Request request = new Request(false, currentTime, 1, 1, 1);
+        Request request = new Request(false, currentTime, 1, 1, 1, 1);
         Request request2 = null;
         try {
             byte[] bytes = Request.toByteArray(request);

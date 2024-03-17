@@ -8,7 +8,7 @@ public class Request implements Serializable  {
     private final int indexNumber; // floor/elevator index number
     private final int buttonId; // if isElevator = true: buttonId = floor button #. If isElevator = false: 1 = up, 0 = down.
     private final int currentFloor;
-    private boolean requestAcknowledged;
+    private final int elevatorFloorID;
 
     /**
      * Constructor for the Request class
@@ -17,13 +17,15 @@ public class Request implements Serializable  {
      * @param indexNumber - what floor/elevator is the request coming from
      * @param buttonId - if isElevator = true: buttonId = floor button #. If isElevator = false: 1 = up, 0 = down.
      * @param currentFloor - What floor the elevator is currently on/what floor the request is being made from
+     * @param elevatorFloorID - What floor or elevator the request is coming from
      */
-    public Request(boolean isElevator, LocalDateTime time, int indexNumber, int buttonId, int currentFloor){
+    public Request(boolean isElevator, LocalDateTime time, int indexNumber, int buttonId, int currentFloor, int elevatorFloorID){
         this.isElevator = isElevator;
         this.time = time;
         this.indexNumber = indexNumber;
         this.buttonId = buttonId;
         this.currentFloor = currentFloor;
+        this.elevatorFloorID = elevatorFloorID;
     }
 
     /**
@@ -32,6 +34,10 @@ public class Request implements Serializable  {
      */
     public boolean isElevator(){
         return this.isElevator;
+    }
+
+    public int getElevatorFloorID(){
+        return this.elevatorFloorID;
     }
 
     /**

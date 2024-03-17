@@ -100,6 +100,7 @@ public class Elevator implements Runnable {
     private ArrayList<ArrivalSensor> arrivalSensors;
     private ArrayList<Instruction> instructionBox;
     private ElevatorMotor motor;
+    private DirectionLamp directionLamp;
 
     /**
      * Constructor for Elevator
@@ -119,6 +120,7 @@ public class Elevator implements Runnable {
         this.arrivalSensors = new ArrayList<ArrivalSensor>();
         this.instructionBox = new ArrayList<Instruction>();
         this.motor = new ElevatorMotor();
+        this.directionLamp = new DirectionLamp(this);
         // Set up sockets
         try {
             this.sendSocket = new DatagramSocket(sendPort);
@@ -163,6 +165,14 @@ public class Elevator implements Runnable {
 
     public ElevatorMotor getMotor(){
         return motor;
+    }
+
+    /**
+     * Getter for lampDirection variable
+     * @return
+     */
+    public DirectionLamp getDirectionLamp() {
+        return directionLamp;
     }
 
     /**

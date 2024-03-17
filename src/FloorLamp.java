@@ -12,4 +12,8 @@ public class FloorLamp {
     public void turnOffLamp(){
         lampOn = false;
     }
+
+    public boolean isLampOn() {
+        return lampOn;
+    }
 }

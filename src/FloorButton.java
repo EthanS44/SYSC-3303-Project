@@ -15,4 +15,8 @@ public class FloorButton {
     public void resetButton(){
         buttonPressed = false;
     }
+
+    public boolean isButtonPressed() {
+        return buttonPressed;
+    }
 }

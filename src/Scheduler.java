@@ -64,6 +64,44 @@ public class Scheduler implements Runnable {
         }
         this.elevatorSendPort = 52;
     }
+    public Scheduler(int socketNum1, int socketNum2, int socketNum3){
+        this.requestBox = new ArrayList<Request>();
+        this.responseBox = new ArrayList<Response>();
+        //this.elevatorqueue = queue;
+        this.currentState = new SchedulerWaiting(); //new
+        System.out.println("Scheduler created\n");
+
+        //set elevator starting positions to floor 1
+        this.elevator1Position = 1;
+        this.elevator2Position = 1;
+        this.elevator3Position = 1;
+
+        //set elevator starting directions to up
+        this.elevator1Direction = 1;
+        this.elevator2Direction = 1;
+        this.elevator3Direction = 1;
+
+        // creates 2 sockets
+        try {
+            receiveSocket = new DatagramSocket(socketNum1);
+        } catch (SocketException se) {
+            se.printStackTrace();
+            System.exit(1);
+        }
+        try {
+            sendReceiveSocket = new DatagramSocket(socketNum2);
+        } catch (SocketException se) {
+            se.printStackTrace();
+            System.exit(1);
+        }
+        try {
+            responseSocket = new DatagramSocket(socketNum3);
+        } catch (SocketException se) {
+            se.printStackTrace();
+            System.exit(1);
+        }
+        this.elevatorSendPort = 52;
+    }
 
     class SchedulerWaiting implements schedulerState {
         @Override

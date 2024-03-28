@@ -44,42 +44,39 @@ class ElevatorMoving implements ElevatorState {
         elevator.goToFloor(elevator);
     }
 }
-class ElevatorHandlingDoor implements ElevatorState{
+class ElevatorHandlingDoor implements ElevatorState {
     @Override
     public void handle(Elevator elevator) {
-        // wait for elevator to be stopped
         System.out.println("Elevator " + elevator.getElevatorID() + ": Changed to HandlingDoor State");
 
-        while (!elevator.isStopped()) {
+        // Assuming the elevator is already stopped when this state is entered
+        elevator.setDoorOpen(true); // Simulating door opening
+        System.out.println("Elevator " + elevator.getElevatorID() + " opening doors.");
+
+        // Check if the door opened successfully
+        if (!elevator.checkDoorOpenedSuccessfully()) {
+            // The door didn't open successfully, handle the stuck door
+            elevator.handleStuckDoor();
+        } else {
+            // If the door opened successfully, proceed with normal operation
+            try {
+                Thread.sleep(3000); // Simulate the door being open for a period
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // Handle thread interruption
+                System.out.println("Elevator " + elevator.getElevatorID() + ": Interrupted while door open.");
+            }
+
+            elevator.setDoorOpen(false); // Simulating door closing
+            System.out.println("Elevator " + elevator.getElevatorID() + " closing doors.");
         }
-
-        // open door
-        System.out.println("Elevator " + elevator.getElevatorID() + " opening doors\n");
-        elevator.setDoorOpen(true);
-
-        // sleep between open and close
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Reset interrupt status
-            System.out.println("Failed to handle instruction");
-        }
-
-        // close door
-        System.out.println("Elevator " + elevator.getElevatorID() + " closing doors\n");
-        elevator.setDoorOpen(false);
-
 
         // remove latest instruction from box
         elevator.getInstructionBox().removeIf(instruction -> instruction.getFloorNumber() == elevator.getCurrentFloor());
 
-        for (Instruction instruction : elevator.getInstructionBox()){
-            System.out.println(instruction.getFloorNumber());
-        }
 
-        // Sets state to waiting
-        System.out.println("Elevator " + elevator.getElevatorID() + ": Changed to Waiting State");
+        // Transition back to waiting state or any other appropriate state
         elevator.setCurrentState(new ElevatorWaiting());
+        System.out.println("Elevator " + elevator.getElevatorID() + ": Changed to Waiting State");
     }
 }
 
@@ -101,6 +98,44 @@ public class Elevator implements Runnable {
     private ArrayList<Instruction> instructionBox;
     private ElevatorMotor motor;
     private DirectionLamp directionLamp;
+    private boolean doorOperationSuccess = true; // Assume door operation is successful by default
+    private int doorRetryCounter = 0; // Counter for door operation attempts
+
+
+    /**
+     * Simulates checking if the elevator door opened successfully.
+     * @return true if the door operation was successful, false if the door is stuck.
+     */
+    public boolean checkDoorOpenedSuccessfully() {
+        // Simulate a scenario where the door fails to open correctly after 3 attempts
+        if (doorRetryCounter >= 3) {
+            doorOperationSuccess = false;
+        }
+        return doorOperationSuccess;
+    }
+
+
+    /**
+     * Handles scenarios where the elevator door is stuck open.
+     */
+    public void handleStuckDoor() {
+        System.out.println("Elevator " + this.elevatorID + ": Door is stuck open. Attempting to resolve.");
+
+        // Increment the retry counter for door operation
+        doorRetryCounter++;
+
+        // Attempt to resolve the door issue by simulating a retry operation
+        if (doorRetryCounter < 3) {
+            System.out.println("Elevator " + this.elevatorID + ": Attempting to close the door, attempt " + doorRetryCounter);
+            // Simulate that the door operation might succeed on a retry
+            doorOperationSuccess = true;
+        } else {
+            // If retries exceed a threshold, log the error and take the elevator out of service for maintenance
+            System.out.println("Elevator " + this.elevatorID + ": Door remains stuck after multiple attempts. Elevator taken out of service for maintenance.");
+            this.stopped = true; 
+            
+        }
+    }
 
     /**
      * Constructor for Elevator

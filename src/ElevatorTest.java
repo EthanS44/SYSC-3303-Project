@@ -13,9 +13,19 @@ public class ElevatorTest {
     @Test
     public void testElevatorMoveUp() {
         Elevator elevator1 = new Elevator(7, 77, 66, 90);
+        Thread elevator1Thread = new Thread(elevator1);
+        elevator1Thread.start();
+
         Instruction instruction = new Instruction(true, 3);
         elevator1.getInstructionBox().add(instruction);
         elevator1.calculateNextFloor();
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         assertEquals(3, elevator1.getCurrentFloor());
     }
 

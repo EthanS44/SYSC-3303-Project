@@ -121,23 +121,37 @@ public class Floor implements Runnable {
     @Override
     public void run() {
         // Push buttons
-        if (floorNumber == 4){
+        if (floorNumber == 22){
             pushButton(true);
         }
-        if (floorNumber == 7){
-            pushButton(true);
-        }
-        if (floorNumber == 6){
-            pushButton(true);
-        }
+
         int i = 0;
         while(true){
+
+
             i+=1;
+
             if(i == 25000){
+                if (floorNumber == 10){
+                    pushButton(true);
+                }
+            }
+
+
+            if(i == 40000){
+                if (floorNumber == 4){
+                    pushButton(true);
+                }
+            }
+
+
+            if(i == 50000){
                 if (floorNumber == 2){
                     pushButton(true);
                 }
             }
+
+
             receiveResponse();
         }
     }

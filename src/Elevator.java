@@ -92,6 +92,7 @@ public class Elevator implements Runnable {
     private int currentFloor;
     private int nextFloor;
     private boolean doorOpen;
+    private boolean elevatorEnabled;
     private ElevatorState currentState;
     DatagramSocket sendSocket;
     DatagramSocket receiveSocket;
@@ -104,13 +105,13 @@ public class Elevator implements Runnable {
 
     /**
      * Constructor for Elevator
-     * @param elevatorID - Takes the elevators ID (Cart #)
-     * @param sendPort - Port number the elevator sends from
+     *
+     * @param elevatorID  - Takes the elevators ID (Cart #)
+     * @param sendPort    - Port number the elevator sends from
      * @param receivePort - Port the elevator receives from
      */
-    public Elevator(int elevatorID, /*ElevatorQueue queue,*/ int sendPort, int receivePort, int acknowledgmentPort){
+    public Elevator(int elevatorID, int sendPort, int receivePort, int acknowledgmentPort) {
         this.elevatorID = elevatorID;
-        //this.elevatorqueue = queue;
         this.currentFloor = 1;
         this.nextFloor = 1;
         this.doorOpen = false;
@@ -121,6 +122,8 @@ public class Elevator implements Runnable {
         this.instructionBox = new ArrayList<Instruction>();
         this.motor = new ElevatorMotor();
         this.directionLamp = new DirectionLamp(this);
+        this.elevatorEnabled = true;
+
         // Set up sockets
         try {
             this.sendSocket = new DatagramSocket(sendPort);
@@ -143,32 +146,58 @@ public class Elevator implements Runnable {
         System.out.println("Elevator " + elevatorID + " created\n");
 
         // adds 7 buttons to the elevator's button list
-        for (int i = 1; i <= 7; i++){
+        for (int i = 1; i <= 22; i++) {
             ElevatorButton newButton = new ElevatorButton(i);
             addButton(newButton);
             newButton.setElevator(this);
         }
 
         // adds an arrival sensor for each floor
-        for (int i = 1; i <= 7; i++){
+        for (int i = 1; i <= 22; i++) {
             ArrivalSensor newSensor = new ArrivalSensor(i, this);
             arrivalSensors.add(newSensor);
         }
     }
+
+    /**
+     * This method enables the elevator
+     */
+    public void enableElevator() {
+        this.elevatorEnabled = true;
+    }
+
+    /**
+     * This method disables the elevator
+     */
+    public void disableElevator() {
+        this.currentState = new ElevatorWaiting();
+        this.elevatorEnabled = false;
+    }
+
+    /**
+     * This method returns elevatorEnabled
+     * @return - elevatorEnabled
+     */
+    public boolean isEnabled(){
+        return this.elevatorEnabled;
+    }
+
     /**
      * Getter for the elevator ID
+     *
      * @return - Elevator ID (Cart #)
      */
     public int getElevatorID() {
         return elevatorID;
     }
 
-    public ElevatorMotor getMotor(){
+    public ElevatorMotor getMotor() {
         return motor;
     }
 
     /**
      * Getter for lampDirection variable
+     *
      * @return
      */
     public DirectionLamp getDirectionLamp() {
@@ -177,76 +206,87 @@ public class Elevator implements Runnable {
 
     /**
      * Getter for the status of the Cart to see if it's stopped or not
+     *
      * @return True = Stopped, False = Running
      */
-    public boolean isStopped(){
+    public boolean isStopped() {
         return stopped;
     }
+
     /**
      * This method returns the current floor
+     *
      * @return int
      */
-    public int getCurrentFloor(){
+    public int getCurrentFloor() {
         return currentFloor;
     }
 
     /**
      * This method sets the current floor to the specified int
+     *
      * @param newFloor represents the next floor to be visited
      */
-    public void setCurrentFloor(int newFloor) { currentFloor = newFloor; }
+    public void setCurrentFloor(int newFloor) {
+        currentFloor = newFloor;
+    }
 
     /**
      * Returns the next floor to be visited
+     *
      * @return int
      */
-    public int getNextFloor() { return nextFloor; }
+    public int getNextFloor() {
+        return nextFloor;
+    }
 
     /**
      * Sets the next floor to be visited to the specified floor
+     *
      * @param newFloor represents the floor to be visited
      */
-    public void setNextFloor(int newFloor) { nextFloor = newFloor;}
+    public void setNextFloor(int newFloor) {
+        nextFloor = newFloor;
+    }
 
     public int calculateNextFloor() {
         int direction = motor.getCurrentDirection();
         int floorToGo = instructionBox.get(0).getFloorNumber();
 
-        if (direction == 1){
-            for (Instruction instruction: instructionBox) {
+        if (direction == 1) {
+            for (Instruction instruction : instructionBox) {
                 if (instruction.getFloorNumber() > floorToGo) {
                     floorToGo = instruction.getFloorNumber();
                 }
             }
         } else {
-            for (Instruction instruction: instructionBox) {
+            for (Instruction instruction : instructionBox) {
                 if (instruction.getFloorNumber() < floorToGo) {
                     floorToGo = instruction.getFloorNumber();
                 }
             }
         }
         // if instruction box is only of size 1, correct the motor direction
-        if (instructionBox.size() == 1 && floorToGo < currentFloor){
+        if (instructionBox.size() == 1 && floorToGo < currentFloor) {
             motor.setDirection(0);
-        }
-        else{
+        } else {
             motor.setDirection(1);
         }
         return floorToGo;
     }
 
-    public void goToFloor(Elevator elevator){
+    public void goToFloor(Elevator elevator) {
         // go to next floor
         elevator.getMotor().startMotor();
 
-        while(elevator.getNextFloor() != elevator.getCurrentFloor()) {
+        while (elevator.getNextFloor() != elevator.getCurrentFloor()) {
             //If statement for the elevator to go up
-            if(elevator.getNextFloor() > elevator.getCurrentFloor()) {
+            if (elevator.getNextFloor() > elevator.getCurrentFloor()) {
                 elevator.getMotor().setDirection(1);
                 System.out.println("Elevator " + elevator.getElevatorID() + " Going to floor " + elevator.getNextFloor() + " Current floor " + elevator.getCurrentFloor());
 
                 // handle arrival sensor of current floor
-                if(elevator.getArrivalSensors().get(elevator.getCurrentFloor() -1).handleArrivalSensor()){
+                if (elevator.getArrivalSensors().get(elevator.getCurrentFloor() - 1).handleArrivalSensor()) {
                     //sleep for time it takes to go to next floor
                     try {
                         Thread.sleep(2602);
@@ -256,6 +296,9 @@ public class Elevator implements Runnable {
                     }
                     //increment floor
                     elevator.setCurrentFloor(elevator.getCurrentFloor() + 1);
+
+                    elevator.setTimer(5);
+
                     break;
                 }
 
@@ -274,13 +317,13 @@ public class Elevator implements Runnable {
 
             }
             //If statement for the elevator to go down
-            else if (elevator.getNextFloor() < elevator.getCurrentFloor()){
+            else if (elevator.getNextFloor() < elevator.getCurrentFloor()) {
                 elevator.getMotor().setDirection(0);
                 System.out.println("Elevator " + elevator.getElevatorID() + " Going to floor " + elevator.getNextFloor() + " Current floor " + elevator.getCurrentFloor());
 
 
                 // handle arrival sensor of current floor
-                if(elevator.getArrivalSensors().get(elevator.getCurrentFloor() - 1).handleArrivalSensor()){
+                if (elevator.getArrivalSensors().get(elevator.getCurrentFloor() - 1).handleArrivalSensor()) {
                     //sleep for time it takes to go to next floor
                     try {
                         Thread.sleep(2602);
@@ -290,6 +333,7 @@ public class Elevator implements Runnable {
                     }
                     //increment floor
                     elevator.setCurrentFloor(elevator.getCurrentFloor() - 1);
+                    elevator.setTimer(5); //reset timer
                     break;
                 }
 
@@ -307,73 +351,108 @@ public class Elevator implements Runnable {
                 elevator.sendResponse(false);
             }
         }
-        System.out.println("Elevator " + elevator.getElevatorID() + " Arrived at floor " + elevator.getCurrentFloor());
-        Instruction instructionToRemove = elevator.isFloorInQueue(elevator.getCurrentFloor());
-        elevator.getInstructionBox().remove(instructionToRemove);
+        try { // CORN
+            Thread.sleep(10000);
+        } catch (InterruptedException e){
 
-        // stop elevator motor
-        elevator.getMotor().stop();
-        if(currentFloor == nextFloor) {
-            elevator.getMotor().changeDirection();
         }
-        elevator.sendResponse(true);
 
-        // set state to door handling
-        elevator.setCurrentState(new ElevatorHandlingDoor());
+        if (this.isEnabled()){
+            System.out.println("Elevator " + elevator.getElevatorID() + " Arrived at floor " + elevator.getCurrentFloor());
+            elevator.killTimer(); //stop timer
+            Instruction instructionToRemove = elevator.isFloorInQueue(elevator.getCurrentFloor());
+            elevator.getInstructionBox().remove(instructionToRemove);
+
+            // stop elevator motor
+            elevator.getMotor().stop();
+            if (currentFloor == nextFloor) {
+                elevator.getMotor().changeDirection();
+            }
+            elevator.sendResponse(true);
+
+            // set state to door handling
+            elevator.setCurrentState(new ElevatorHandlingDoor());
+        }
     }
+
     /**
      * This method returns true if the door is opened and false otherwise
+     *
      * @return boolean
      */
-    public boolean isDoorOpen(){ return doorOpen; }
+    public boolean isDoorOpen() {
+        return doorOpen;
+    }
 
     /**
      * this method sets the doorOpen field to the specified boolean value
+     *
      * @param open represents the value to set the field to
      */
-    public void setDoorOpen(boolean open) { doorOpen = open; }
+    public void setDoorOpen(boolean open) {
+        doorOpen = open;
+    }
 
     /**
      * This method returns the current state of the elevator
+     *
      * @return ElevatorState
      */
-    public ElevatorState getCurrentState() { return currentState; }
+    public ElevatorState getCurrentState() {
+        return currentState;
+    }
 
     /**
      * Sets current state to the specified ElevatorState
+     *
      * @param state represents the state to change the current state to
      */
-    public void setCurrentState(ElevatorState state) { this.currentState = state;}
+    public void setCurrentState(ElevatorState state) {
+        this.currentState = state;
+    }
 
     /**
      * Adds ElevatorButton to the inside of the elevator
+     *
      * @param button specifies the button to be added
      */
-    public void addButton(ElevatorButton button){ this.buttonList.add(button);}
+    public void addButton(ElevatorButton button) {
+        this.buttonList.add(button);
+    }
 
     /**
      * Removes ElevatorButton from the elevator
+     *
      * @param button specifies the button to be removed
      */
-    public void removeButton(ElevatorButton button){ this.buttonList.remove(button); }
+    public void removeButton(ElevatorButton button) {
+        this.buttonList.remove(button);
+    }
 
     /**
      * Returns the list of buttons inside the elevator
+     *
      * @return ArrayList<ElevatorButtons>
      */
     public ArrayList<ElevatorButton> getButtonList(){ return this.buttonList; }
 
     /**
      * Returns the queue that the Elevator takes instructions from
+     *
      * @return ElevatorQueue
      */
     // public ElevatorQueue getElevatorQueue() {return this.elevatorqueue; }
-    public ArrayList<Instruction> getInstructionBox() { return this.instructionBox; }
-    public ArrayList<ArrivalSensor> getArrivalSensors() { return this.arrivalSensors; }
+    public ArrayList<Instruction> getInstructionBox() {
+        return this.instructionBox;
+    }
 
-    public Instruction isFloorInQueue(int floorNumber){
-        for (Instruction instruction: this.instructionBox){
-            if (instruction.getFloorNumber() == floorNumber){
+    public ArrayList<ArrivalSensor> getArrivalSensors() {
+        return this.arrivalSensors;
+    }
+
+    public Instruction isFloorInQueue(int floorNumber) {
+        for (Instruction instruction : this.instructionBox) {
+            if (instruction.getFloorNumber() == floorNumber) {
                 return instruction; //return the matching instruction
             }
         }
@@ -383,11 +462,14 @@ public class Elevator implements Runnable {
     /**
      * Executes code section in the current state
      */
-    public void request() { this.currentState.handle(this); }
+    public void request() {
+        this.currentState.handle(this);
+    }
+
     /**
      * Constant loop that continuously handles any instructions fed to the elevator by the scheduler
      */
-    public void sendRequest(Request requestToSend){
+    public void sendRequest(Request requestToSend) {
         try {
             // data is the byte array that represents the Request
             byte[] data = requestToSend.toByteArray(requestToSend);
@@ -417,23 +499,23 @@ public class Elevator implements Runnable {
             receiveSocket.receive(packetToReceive);
             System.out.println("Elevator " + this.elevatorID + " Received Instruction from Scheduler");
         } catch (SocketTimeoutException e) {
-            //System.out.println("Timeout Exception"); // Handles SocketTimeoutException if no packet is received within the specified timeout
             return;
         } catch (IOException e) {
-            //System.out.println("IOException"); // Handles IOException if any occurs during receive operation
+            e.printStackTrace();
+            System.out.println("Failed to receive packet - IOException");
             return;
         }
 
         // Turn data into instruction
-        Instruction instruction =  Instruction.toInstruction(packetToReceive.getData());
+        Instruction instruction = Instruction.toInstruction(packetToReceive.getData());
 
         // add instruction to instructionbox if floor number is not already in box
-        if (isFloorInQueue(instruction.getFloorNumber()) == null){
+        if (isFloorInQueue(instruction.getFloorNumber()) == null) {
             this.instructionBox.add(instruction);
         }
     }
 
-    public void receiveAcknowledgment(){
+    public void receiveAcknowledgment() {
         byte[] data = new byte[200];
         DatagramPacket acknowledgementPacket = null;
 
@@ -452,7 +534,7 @@ public class Elevator implements Runnable {
     /**
      * Sends a response to the Scheduler
      */
-    public void sendResponse(boolean stoppingAtFloor){
+    public void sendResponse(boolean stoppingAtFloor) {
 
         Response response = new Response(currentFloor, getMotor().getCurrentDirection(), elevatorID, stoppingAtFloor);
         DatagramPacket newPacket = null;
@@ -463,7 +545,7 @@ public class Elevator implements Runnable {
 
             // Create UDP packet with instruction bytes, destination IP, and port
 
-            newPacket = new DatagramPacket(responseBytes , responseBytes.length, InetAddress.getLocalHost(), 70);
+            newPacket = new DatagramPacket(responseBytes, responseBytes.length, InetAddress.getLocalHost(), 70);
         } catch (UnknownHostException e) {
             e.printStackTrace();
             System.exit(1);
@@ -480,23 +562,35 @@ public class Elevator implements Runnable {
             System.exit(1);
         }
     }
-    @Override
-    public void run(){
 
+    @Override
+    public void run() {
+        // Timer setup
+        Timer elevatorTimer = new Timer();
+        Thread timerThread = new Thread(elevatorTimer, "ElevatorTimer");
+        this.timer = elevatorTimer;
+        this.timer.setElevator(this);
+
+        timerThread.start();
+
+
+        /*
         // Push button 7
         if (elevatorID == 1) {
-            this.buttonList.get(6).pushButton();
-            this.buttonList.get(3).pushButton();
+            this.buttonList.get(5).pushButton();
         }
+
         if (elevatorID == 2) {
             this.buttonList.get(4).pushButton();
             this.buttonList.get(2).pushButton();
         }
 
-        while(true){
-            request();
+         */
 
+
+        while (true) {
+
+            request();
         }
     }
-
 }

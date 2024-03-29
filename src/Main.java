@@ -18,11 +18,26 @@ public class Main {
         Thread sixthFloor = new Thread(new Floor(6), "Sixth Floor");
         Thread seventhFloor = new Thread(new Floor(7), "Seventh Floor");
         Thread eighthFloor = new Thread(new Floor(8), "Eighth Floor");
+        Thread ninthFloor = new Thread(new Floor(9), "Ninth Floor");
+        Thread tenthFloor = new Thread(new Floor(10), "Tenth Floor");
+        Thread eleventhFloor = new Thread(new Floor(11), "Eleventh Floor");
+        Thread twelfthFloor = new Thread(new Floor(12), "Twelfth Floor");
+        Thread thirteenthFloor = new Thread(new Floor(13), "Thirteenth Floor");
+        Thread fourteenthFloor = new Thread(new Floor(14), "Fourteenth Floor");
+        Thread fifteenthFloor = new Thread(new Floor(15), "Fifteenth Floor");
+        Thread sixteenthFloor = new Thread(new Floor(16), "Sixteenth Floor");
+        Thread seventeenthFloor = new Thread(new Floor(17), "Seventeenth Floor");
+        Thread eighteenthFloor = new Thread(new Floor(18), "Eighteenth Floor");
+        Thread nineteenthFloor = new Thread(new Floor(19), "Nineteenth Floor");
+        Thread twentiethFloor = new Thread(new Floor(20), "Twentieth Floor");
+        Thread twentyFirstFloor = new Thread(new Floor(21), "Twenty-First Floor");
+        Thread twentySecondFloor = new Thread(new Floor(22), "Twenty-Second Floor");
 
         //create elevator thread
-        Thread elevatorThread = new Thread(new Elevator(1, 30, 50, 60), "Elevator");
+        Thread elevatorThread1 = new Thread(new Elevator(1, 30, 50, 60), "Elevator 1");
         Thread elevatorThread2 = new Thread(new Elevator(2, 31, 51, 61), "Elevator 2");
         Thread elevatorThread3 = new Thread(new Elevator(3, 32, 52, 62), "Elevator 3");
+        //Thread elevatorThread4 = new Thread(new Elevator(4, 33, 53, 63), "Elevator 4");
 
         //start threads
         schedulerThread.start();
@@ -35,9 +50,26 @@ public class Main {
         sixthFloor.start();
         seventhFloor.start();
         eighthFloor.start();
+        ninthFloor.start();
+        tenthFloor.start();
+        eleventhFloor.start();
+        twelfthFloor.start();
+        thirteenthFloor.start();
+        fourteenthFloor.start();
+        fifteenthFloor.start();
+        sixteenthFloor.start();
+        seventeenthFloor.start();
+        eighteenthFloor.start();
+        nineteenthFloor.start();
+        twentiethFloor.start();
+        twentyFirstFloor.start();
+        twentySecondFloor.start();
 
-        elevatorThread.start();
+
+        elevatorThread1.start();
         elevatorThread2.start();
         elevatorThread3.start();
+        //elevatorThread4.start();
+
     }
 }

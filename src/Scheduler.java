@@ -3,6 +3,7 @@ import java.lang.reflect.Array;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 //thought process since we delete the elevator queue the methods that depended on it how will they be handled
 //Also would the scheduler send response back to the floor
@@ -17,8 +18,9 @@ public class Scheduler implements Runnable {
     private ArrayList<Request> requestBox;
     private ArrayList<Response> responseBox;
     private int elevatorSendPort;
-    private int elevator1Position, elevator2Position, elevator3Position;
-    private int elevator1Direction, elevator2Direction, elevator3Direction; // 1 is up 0 is down
+    private int elevator1Position, elevator2Position, elevator3Position, elevator4Position;
+    private int elevator1Direction, elevator2Direction, elevator3Direction, elevator4Direction; // 1 is up 0 is down
+    private int elevator1Enabled, elevator2Enabled, elevator3Enabled, elevator4Enabled;
 
 
     DatagramSocket receiveSocket;
@@ -37,11 +39,13 @@ public class Scheduler implements Runnable {
         this.elevator1Position = 1;
         this.elevator2Position = 1;
         this.elevator3Position = 1;
+        this.elevator4Position = 1;
 
         //set elevator starting directions to up
         this.elevator1Direction = 1;
         this.elevator2Direction = 1;
         this.elevator3Direction = 1;
+        this.elevator4Direction = 1;
 
         // creates 2 sockets
         try {
@@ -64,6 +68,7 @@ public class Scheduler implements Runnable {
         }
         this.elevatorSendPort = 52;
     }
+
     public Scheduler(int socketNum1, int socketNum2, int socketNum3){
         this.requestBox = new ArrayList<Request>();
         this.responseBox = new ArrayList<Response>();
@@ -75,11 +80,13 @@ public class Scheduler implements Runnable {
         this.elevator1Position = 1;
         this.elevator2Position = 1;
         this.elevator3Position = 1;
+        this.elevator4Position = 1;
 
         //set elevator starting directions to up
         this.elevator1Direction = 1;
         this.elevator2Direction = 1;
         this.elevator3Direction = 1;
+        this.elevator4Direction = 1;
 
         // creates 2 sockets
         try {
@@ -216,6 +223,9 @@ public class Scheduler implements Runnable {
             case(3):
                 elevatorSendPort = 52;
                 break;
+            case(4):
+                elevatorSendPort = 53;
+                break;
         }
 
         // send packet to Elevator
@@ -226,11 +236,16 @@ public class Scheduler implements Runnable {
             DatagramPacket packet = new DatagramPacket(instructionBytes, instructionBytes.length, InetAddress.getLocalHost(), elevatorSendPort); //its just sending to elevator 1 for now
 
             sendReceiveSocket.send(packet);
-            System.out.println("Scheduler: Instruction sent to Elevator.\n");
+            System.out.println(packet.getData());
+
+        } catch (NoRouteToHostException no){
+            System.out.println("Failed to send Instruction to Elevator, sending again");
+            sendInstructionToElevator(instruction); //send instruction again
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
         }
+        System.out.println("Scheduler: Instruction sent to Elevator " + closestElevator + ".\n");
     }
 
    public void receiveResponse(){ //updates elevator positions and directions and send to floor to turn off lamps and buttons
@@ -257,6 +272,7 @@ public class Scheduler implements Runnable {
                response = Response.toResponse(packetToReceive.getData());
            } catch (IOException | ClassNotFoundException e) {
                System.out.println("Scheduler: IOException");
+               e.printStackTrace();
                return;
            }
 
@@ -273,6 +289,10 @@ public class Scheduler implements Runnable {
                case (3):
                    elevator3Position = response.getFloorNumber();
                    elevator3Direction = response.getCurrentDirection();
+                   break;
+               case (4):
+                   elevator4Position = response.getFloorNumber();
+                   elevator4Direction = response.getCurrentDirection();
                    break;
            }
            System.out.println("Elevator " + response.getElevatorID() + " position updated to floor " + getElevatorPosition(response.getElevatorID()) + " and direction to " + getElevatorDirection(response.getElevatorID()));
@@ -333,7 +353,8 @@ public class Scheduler implements Runnable {
             //System.out.println("Timeout Exception"); // Handles SocketTimeoutException if no packet is received within the specified timeout
             return;
         } catch (IOException e) {
-            //System.out.println("IOException"); // Handles IOException if any occurs during receive operation
+            e.printStackTrace();
+            System.out.println("IOException");
             return;
         }
 
@@ -343,6 +364,7 @@ public class Scheduler implements Runnable {
             request = Request.toRequest(packetToReceive.getData());
         } catch (IOException io) {
             System.out.println("Scheduler: Empty or Invalid Request, IO Exception");
+            io.printStackTrace();
             return;
 
         } catch (ClassNotFoundException e) {
@@ -368,6 +390,9 @@ public class Scheduler implements Runnable {
                 case(3):
                     sendPort = 62;
                     break;
+                case(4):
+                    sendPort = 63;
+                    break;
             }
             try {
                 byte[] data2 = new byte[200];
@@ -392,6 +417,8 @@ public class Scheduler implements Runnable {
                 return elevator2Position;
             case 3:
                 return elevator3Position;
+            case 4:
+                return elevator4Position;
             default:
                 return -1;
         }
@@ -406,18 +433,26 @@ public class Scheduler implements Runnable {
                 return elevator2Direction;
             case 3:
                 return elevator3Direction;
+            case 4:
+                return elevator4Direction;
             default:
                 return -1;
         }
     }
     public int getClosestElevator(int floorNumber) {
         int closestElevator = -1;
-        int minDistance = 8;
+        int minDistance = Integer.MAX_VALUE; // Initialize minDistance to maximum possible value
 
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= 3; i++) { //change 3 to 4 for 4th elevator
             int distance = Math.abs(getElevatorPosition(i) - floorNumber); // calculate distance to floor
 
-            // check if the elevator is pointing in the right direction
+            // Check if the elevator is already at the requested floor
+            if (getElevatorPosition(i) == floorNumber) {
+                closestElevator = i;
+                break; // No need to continue if an elevator is already at the floor
+            }
+
+            // Check if the elevator is pointing in the right direction
             if ((getElevatorDirection(i) == 1 && floorNumber > getElevatorPosition(i)) ||
                     (getElevatorDirection(i) == 0 && floorNumber < getElevatorPosition(i))) {
                 // check if the distance is smaller than the current minimum distance
@@ -427,16 +462,23 @@ public class Scheduler implements Runnable {
                 }
             }
         }
-        System.out.println("Elevator " + closestElevator + " is the closest");
+
+        // If no elevator is already at the requested floor, print the closest elevator
+        if (closestElevator != -1) {
+            System.out.println("Elevator " + closestElevator + " is the closest to floor " + floorNumber);
+        }
+
         return closestElevator;
     }
 
     @Override
     public void run(){
 
+
         while(true){
 
             request();
+
         }
     }
 }

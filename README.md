@@ -7,7 +7,7 @@ The included java project is an elevator simulation using threads for iteration 
 There are 20 classes including elevator and scheduler states. There are also 6 test classes and 2 interfaces. 
 
 To run the simulation, open the project file "Elevator Simulator" in intellij, navigate to "Main.java" and click
-run. A series of button pushes is ready to be run to observe the movement of the elevators.
+run. A series of button pushes are ready to run to observe the movement of the elevators.
 To test the classes, navigate to their respective testing classes and run them. 
 
 UML Sequence, UML Class and state diagrams are included in "Iteration 3 UML Sequence.pdf", "Iteration 3 UML Class.pdf", 

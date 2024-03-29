@@ -36,4 +36,6 @@ public class FloorTest {
         assertFalse(floor.isWaiting());
     }
 
+    //Floor Fault
+
 }

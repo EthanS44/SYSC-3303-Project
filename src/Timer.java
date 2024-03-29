@@ -58,4 +58,5 @@ public class Timer implements Runnable {
     public void setElevator(Elevator elevator){
         this.elevator = elevator;
     }
+    public Elevator getElevator() { return elevator; }
 }

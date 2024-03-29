@@ -631,7 +631,6 @@ public class Elevator implements Runnable {
 
 
         while (true) {
-
             request();
         }
     }

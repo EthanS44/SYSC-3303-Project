@@ -17,6 +17,16 @@ public class ElevatorButton {
         pressed = true;
     }
 
+    public void pushButtonTest(){
+        System.out.println("Elevator button " + buttonNo + " pushed!");
+        LocalDateTime currentTime = LocalDateTime.now();
+        Request request = new Request(true, currentTime, this.elevator.getElevatorID(), buttonNo, this.elevator.getCurrentFloor(), this.elevator.getElevatorID());
+
+        //Assuming Request was actually sent
+        System.out.println("Packet Successfully Sent!");
+        pressed = true;
+    }
+
     public int getButtonNo() {
         return buttonNo;
     }

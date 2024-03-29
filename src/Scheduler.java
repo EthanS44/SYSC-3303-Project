@@ -428,18 +428,19 @@ public class Scheduler implements Runnable {
         int closestElevator = -1;
         int minDistance = Integer.MAX_VALUE; // Initialize minDistance to maximum possible value
 
-        for (int i = 1; i <= 3; i++) { //change 3 to 4 for 4th elevator
+        for (int i = 1; i <= 4; i++) { // Updated loop for 4 elevators
             int distance = Math.abs(getElevatorPosition(i) - floorNumber); // calculate distance to floor
 
             // Check if the elevator is already at the requested floor
-            if (getElevatorPosition(i) == floorNumber) {
+            if (getElevatorPosition(i) == floorNumber && getElevatorDirection(i) != -1) {
                 closestElevator = i;
-                break; // No need to continue if an elevator is already at the floor
+                break; // No need to continue if an elevator is already at the floor and not in idle state
             }
 
-            // Check if the elevator is pointing in the right direction
-            if ((getElevatorDirection(i) == 1 && floorNumber > getElevatorPosition(i)) ||
-                    (getElevatorDirection(i) == 0 && floorNumber < getElevatorPosition(i))) {
+            // Check if the elevator is pointing in the right direction and not in idle state
+            if (getElevatorDirection(i) != -1 &&
+                    ((getElevatorDirection(i) == 1 && floorNumber > getElevatorPosition(i)) ||
+                            (getElevatorDirection(i) == 0 && floorNumber < getElevatorPosition(i)))) {
                 // check if the distance is smaller than the current minimum distance
                 if (distance < minDistance) {
                     minDistance = distance;

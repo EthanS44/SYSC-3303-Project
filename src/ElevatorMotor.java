@@ -1,7 +1,7 @@
 public class ElevatorMotor {
 
     private boolean isRunning;
-    private int currentDirection; //0 for down, 1 for up
+    private int currentDirection; //0 for down, 1 for up, -1 for a disabled elevator
     private int currentSpeed;
     private Elevator elevator;
 

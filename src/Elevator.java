@@ -178,6 +178,8 @@ public class Elevator implements Runnable {
     public void disableElevator() {
         this.currentState = new ElevatorWaiting();
         this.elevatorEnabled = false;
+        this.getMotor().setDirection(-1); //set direction to -1 to signify a disabled elevator
+        this.sendResponse(true);
     }
 
     /**

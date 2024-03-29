@@ -18,7 +18,9 @@ public class ElevatorButtonTest {
         Elevator elevator = new Elevator(12, 898, 547, 796);
         ElevatorButton button = new ElevatorButton(1);
         button.setElevator(elevator);
-        button.pushButton();
+
+        button.pushButtonTest();
+
         assertTrue(button.isPressed());
     }
 

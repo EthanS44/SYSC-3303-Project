@@ -50,20 +50,11 @@ public class Scheduler implements Runnable {
         // creates 2 sockets
         try {
             receiveSocket = new DatagramSocket(41);
-        } catch (SocketException se) {
-            se.printStackTrace();
-            System.exit(1);
-        }
-        try {
             sendReceiveSocket = new DatagramSocket(40);
-        } catch (SocketException se) {
-            se.printStackTrace();
-            System.exit(1);
-        }
-        try {
             responseSocket = new DatagramSocket(70);
         } catch (SocketException se) {
             se.printStackTrace();
+            System.out.println("Scheduler failed to create Sockets");
             System.exit(1);
         }
         this.elevatorSendPort = 52;
@@ -91,20 +82,11 @@ public class Scheduler implements Runnable {
         // creates 2 sockets
         try {
             receiveSocket = new DatagramSocket(socketNum1);
-        } catch (SocketException se) {
-            se.printStackTrace();
-            System.exit(1);
-        }
-        try {
             sendReceiveSocket = new DatagramSocket(socketNum2);
-        } catch (SocketException se) {
-            se.printStackTrace();
-            System.exit(1);
-        }
-        try {
             responseSocket = new DatagramSocket(socketNum3);
         } catch (SocketException se) {
             se.printStackTrace();
+            System.out.println("Scheduler failed to create Sockets");
             System.exit(1);
         }
         this.elevatorSendPort = 52;
@@ -233,7 +215,7 @@ public class Scheduler implements Runnable {
             // Serialize instruction object to bytes
             byte[] instructionBytes = instruction.toByteArray(instruction);
             // Create UDP packet with instruction bytes, destination IP, and port
-            DatagramPacket packet = new DatagramPacket(instructionBytes, instructionBytes.length, InetAddress.getLocalHost(), elevatorSendPort); //its just sending to elevator 1 for now
+            DatagramPacket packet = new DatagramPacket(instructionBytes, instructionBytes.length, InetAddress.getLocalHost(), elevatorSendPort);
 
             sendReceiveSocket.send(packet);
             System.out.println(packet.getData());
@@ -243,6 +225,7 @@ public class Scheduler implements Runnable {
             sendInstructionToElevator(instruction); //send instruction again
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("Failed to send Instruction to Elevator");
             System.exit(1);
         }
         System.out.println("Scheduler: Instruction sent to Elevator " + closestElevator + ".\n");
@@ -258,10 +241,9 @@ public class Scheduler implements Runnable {
                responseSocket.setSoTimeout(1);
                responseSocket.receive(packetToReceive);
            } catch (SocketTimeoutException e) {
-               //System.out.println("Timeout Exception"); // Handles SocketTimeoutException if no packet is received within the specified timeout
                return;
            } catch (IOException e) {
-               //System.out.println("IOException"); // Handles IOException if any occurs during receive operation
+               System.out.println("IOException"); // Handles IOException if any occurs during receive operation
                return;
            }
 
@@ -315,8 +297,10 @@ public class Scheduler implements Runnable {
            newPacket = new DatagramPacket(responseBytes , responseBytes.length, InetAddress.getLocalHost(), response.getFloorNumber());
        } catch (UnknownHostException e) {
            e.printStackTrace();
+           System.out.println("Unable to create new packet, UnknownHost");
            System.exit(1);
        } catch (IOException e) {
+           System.out.println("Unable to create new packet, IOException");
            throw new RuntimeException(e);
        }
 
@@ -326,6 +310,7 @@ public class Scheduler implements Runnable {
            System.out.println("Scheduler sent response to floor");
        } catch (IOException e) {
            e.printStackTrace();
+           System.out.println("Scheduler failed to send Response");
            System.exit(1);
        }
    }
@@ -350,7 +335,6 @@ public class Scheduler implements Runnable {
             receiveSocket.receive(packetToReceive);
             System.out.println("\nScheduler: Request received");
         } catch (SocketTimeoutException e) {
-            //System.out.println("Timeout Exception"); // Handles SocketTimeoutException if no packet is received within the specified timeout
             return;
         } catch (IOException e) {
             e.printStackTrace();
@@ -404,6 +388,7 @@ public class Scheduler implements Runnable {
 
             } catch (IOException e) {
                 e.printStackTrace();
+                System.out.println("Failed to send Response");
                 System.exit(1);
             }
         }

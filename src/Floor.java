@@ -30,6 +30,7 @@ public class Floor implements Runnable {
             this.schedulerAddress = InetAddress.getLocalHost(); // Assuming scheduler is on the same machine
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("Floor - Failed to create sockets");
             System.exit(1);
         }
 
@@ -74,6 +75,7 @@ public class Floor implements Runnable {
             return true;
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("Floor failed to send Request to Scheduler");
             return false;
         }
     }
@@ -99,10 +101,9 @@ public class Floor implements Runnable {
             receiveSocket.setSoTimeout(1);
             receiveSocket.receive(packetToReceive);
         } catch (SocketTimeoutException e) {
-            //System.out.println("Timeout Exception"); // Handles SocketTimeoutException if no packet is received within the specified timeout
             return;
         } catch (IOException e) {
-            //System.out.println("IOException"); // Handles IOException if any occurs during receive operation
+            System.out.println("Floor failed to receive response - IOException");
             return;
         }
 

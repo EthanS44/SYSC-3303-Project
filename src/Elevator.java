@@ -9,32 +9,33 @@ import static java.lang.Thread.sleep;
 class ElevatorWaiting implements ElevatorState {
     @Override
     public void handle(Elevator elevator) {
-
-        if(elevator.getDirectionLamp().isLampOn()) {
-            elevator.getDirectionLamp().turnOffLamp();
-        }
-
-        // receive instruction packet from scheduler
-        for (int i = 0; i < 10; i++) {
-            try {
-                elevator.receiveInstructionFromScheduler();
-            } catch (IOException | ClassNotFoundException e) {
-                System.out.println("Elevator " + elevator.getElevatorID() + ": Error executing Instruction");
+        if (elevator.isEnabled()){
+            if(elevator.getDirectionLamp().isLampOn()) {
+                elevator.getDirectionLamp().turnOffLamp();
             }
-        }
+
+            // receive instruction packet from scheduler
+            for (int i = 0; i < 10; i++) {
+                try {
+                    elevator.receiveInstructionFromScheduler();
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                    System.out.println("Elevator " + elevator.getElevatorID() + ": Error executing Instruction");
+                }
+            }
 
 
-        // get instruction from box and set new floor
+            // get instruction from box and set new floor
             if (!elevator.getInstructionBox().isEmpty()) { // we have an instruction
-                    elevator.setNextFloor(elevator.calculateNextFloor());
-                    System.out.println("Elevator " + elevator.getElevatorID() + ": Next floor set to " + elevator.calculateNextFloor());
-                    //Turn on direction lamp
-                    elevator.getDirectionLamp().turnOnLamp(elevator.getMotor().getCurrentDirection());
-                    elevator.setCurrentState(new ElevatorMoving());
+                elevator.setNextFloor(elevator.calculateNextFloor());
+                System.out.println("Elevator " + elevator.getElevatorID() + ": Next floor set to " + elevator.calculateNextFloor());
+                //Turn on direction lamp
+                elevator.getDirectionLamp().turnOnLamp(elevator.getMotor().getCurrentDirection());
+                elevator.setCurrentState(new ElevatorMoving());
             }
-
         }
     }
+}
 
 
 class ElevatorMoving implements ElevatorState {
@@ -62,7 +63,8 @@ class ElevatorHandlingDoor implements ElevatorState{
             Thread.sleep(3000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Reset interrupt status
-            System.out.println("Failed to handle instruction");
+            e.printStackTrace();
+            System.out.println("Sleep failed");
         }
 
         // close door
@@ -102,6 +104,7 @@ public class Elevator implements Runnable {
     private ArrayList<Instruction> instructionBox;
     private ElevatorMotor motor;
     private DirectionLamp directionLamp;
+    private Timer timer;
 
     /**
      * Constructor for Elevator
@@ -129,18 +132,21 @@ public class Elevator implements Runnable {
             this.sendSocket = new DatagramSocket(sendPort);
         } catch (SocketException se) {
             se.printStackTrace();
+            System.out.println("Failed to create Send Socket");
             System.exit(1);
         }
         try {
             this.receiveSocket = new DatagramSocket(receivePort);
         } catch (SocketException se) {
             se.printStackTrace();
+            System.out.println("Failed to create Receive Socket");
             System.exit(1);
         }
         try {
             this.acknowledgementSocket = new DatagramSocket(acknowledgmentPort);
         } catch (SocketException se) {
             se.printStackTrace();
+            System.out.println("Failed to create Acknowledgement Socket");
             System.exit(1);
         }
         System.out.println("Elevator " + elevatorID + " created\n");
@@ -278,6 +284,7 @@ public class Elevator implements Runnable {
     public void goToFloor(Elevator elevator) {
         // go to next floor
         elevator.getMotor().startMotor();
+        elevator.setTimer(5);
 
         while (elevator.getNextFloor() != elevator.getCurrentFloor()) {
             //If statement for the elevator to go up
@@ -292,7 +299,7 @@ public class Elevator implements Runnable {
                         Thread.sleep(2602);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt(); // Reset interrupt status
-                        System.out.println("Failed to handle instruction");
+                        System.out.println("Sleep failed");
                     }
                     //increment floor
                     elevator.setCurrentFloor(elevator.getCurrentFloor() + 1);
@@ -307,11 +314,12 @@ public class Elevator implements Runnable {
                     Thread.sleep(2602);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // Reset interrupt status
-                    System.out.println("Failed to handle instruction");
+                    System.out.println("Sleep failed");
                 }
 
                 //increment floor
                 elevator.setCurrentFloor(elevator.getCurrentFloor() + 1);
+                elevator.setTimer(5); //reset timer
                 //send scheduler current floor and direction
                 elevator.sendResponse(false);
 
@@ -329,7 +337,7 @@ public class Elevator implements Runnable {
                         Thread.sleep(2602);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt(); // Reset interrupt status
-                        System.out.println("Failed to handle instruction");
+                        System.out.println("Sleep failed");
                     }
                     //increment floor
                     elevator.setCurrentFloor(elevator.getCurrentFloor() - 1);
@@ -342,11 +350,12 @@ public class Elevator implements Runnable {
                     Thread.sleep(2602);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // Reset interrupt status
-                    System.out.println("Failed to handle instruction");
+                    System.out.println("Sleep failed");
                 }
 
                 //increment floor
                 elevator.setCurrentFloor(elevator.getCurrentFloor() - 1);
+                elevator.setTimer(5);
                 //send scheduler current floor and direction
                 elevator.sendResponse(false);
             }
@@ -434,7 +443,34 @@ public class Elevator implements Runnable {
      *
      * @return ArrayList<ElevatorButtons>
      */
-    public ArrayList<ElevatorButton> getButtonList(){ return this.buttonList; }
+    public ArrayList<ElevatorButton> getButtonList() {
+        return this.buttonList;
+    }
+
+    /**
+     * sets the elevator's timer to the specified time.
+     *
+     * @param time the time to set the timer to
+     */
+    public void setTimer(int time) {
+        this.timer.setTimer(time);
+    }
+
+    /**
+     * stops the elevator's timer
+     */
+    public void killTimer() {
+        this.timer.killTimer();
+    }
+
+    /**
+     * Returns the current value of the elevator's timer
+     *
+     * @return int
+     */
+    public int getTimer() {
+        return this.timer.getTime();
+    }
 
     /**
      * Returns the queue that the Elevator takes instructions from
@@ -480,6 +516,7 @@ public class Elevator implements Runnable {
             System.out.println("Elevator " + this.elevatorID + " Sent Request from Button " + requestToSend.getButtonId());
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("Failed to send request to Scheduler");
             System.exit(1);
         }
         //receive acknowledgment from scheduler after sending request
@@ -527,7 +564,7 @@ public class Elevator implements Runnable {
             acknowledgementSocket.receive(acknowledgementPacket);
             System.out.println("Elevator " + this.elevatorID + " received acknowledgment from scheduler");
         } catch (IOException e) {
-            System.out.println("IOException");
+            System.out.println("Failed to Receive Request - IOException");
         }
     }
 
@@ -548,8 +585,10 @@ public class Elevator implements Runnable {
             newPacket = new DatagramPacket(responseBytes, responseBytes.length, InetAddress.getLocalHost(), 70);
         } catch (UnknownHostException e) {
             e.printStackTrace();
+            System.out.println("Failed to find packet host - UnknownHostException");
             System.exit(1);
         } catch (IOException e) {
+            System.out.println("IOException");
             throw new RuntimeException(e);
         }
 
@@ -559,6 +598,7 @@ public class Elevator implements Runnable {
             System.out.println("Elevator " + this.elevatorID + " Sent Response to Scheduler");
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("Failed to send response packet");
             System.exit(1);
         }
     }

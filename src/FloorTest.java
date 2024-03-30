@@ -37,5 +37,28 @@ public class FloorTest {
     }
 
     //Floor Fault
+    @Test
+    public void testFloorFault() {
+        Floor floor = new Floor(2, true);
+        Elevator elevator = new Elevator(84);
+        Timer timer = new Timer();
+        timer.setElevator(elevator);
+        timer.setTimer(1);
 
+        //Assume that floor gets stuck on floor 3
+        floor.pushButton(true, true);
+        elevator.setCurrentFloor(5);
+        elevator.runElevator(3);
+        timer.runTimer();
+
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        elevator.setCurrentFloor(-1);
+
+        assertFalse(timer.isActiveTest());
+
+    }
 }

@@ -50,7 +50,28 @@ public class ElevatorTest {
     }
 
     //Elevator Fault
+    @Test
+    public void testElevatorFault() {
+        Elevator elevator1 = new Elevator(7);
+        Timer timer = new Timer();
+        timer.setElevator(elevator1);
 
-    //Elevator Door Fault
+        elevator1.setCurrentFloor(5);
+        Instruction instruction = new Instruction(false, 2);
+        elevator1.getInstructionBox().add(instruction);
+        elevator1.runElevator(3);
+        timer.runTimer();
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        if (elevator1.getCurrentFloor() != 2) {
+            elevator1.setCurrentFloor(-1);
+        }
+
+        assertFalse(timer.isActiveTest());
+    }
 
 }

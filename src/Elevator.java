@@ -171,6 +171,42 @@ public class Elevator implements Runnable {
     }
 
     /**
+     * Makes an empty Elevator
+     */
+    public Elevator(int elevatorID){
+        this.elevatorID = elevatorID;
+        this.arrivalSensors = new ArrayList<ArrivalSensor>();
+        this.instructionBox = new ArrayList<Instruction>();
+        this.motor = new ElevatorMotor();
+        this.directionLamp = new DirectionLamp(this);
+        this.elevatorEnabled = true;
+        this.currentFloor = 1;
+        this.nextFloor = 1;
+        this.doorOpen = false;
+        this.stopped = true;
+        this.currentState = new ElevatorWaiting();
+    }
+
+    /**
+     * Purely for testing, uses similar logic
+     */
+    public void runElevator(int floor){
+        while(currentFloor != floor){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            if(currentFloor < floor) {
+                setCurrentFloor(currentFloor + 1);
+            }
+            else{
+                setCurrentFloor(currentFloor - 1);
+            }
+        }
+    }
+
+    /**
      * This method enables the elevator
      */
     public void enableElevator() {

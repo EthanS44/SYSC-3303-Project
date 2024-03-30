@@ -42,6 +42,18 @@ public class Floor implements Runnable {
         System.out.println("Floor " + floorNumber + " has been created");
     }
 
+    /**
+     * Testing Constructor for floor
+     * @param floorNumber
+     * @param isTest
+     */
+    public Floor(int floorNumber, boolean isTest){
+        this.floorNumber = floorNumber;
+        if(!isTest){
+            System.exit(1);
+        }
+    }
+
     public boolean isWaiting() {
         return waiting;
     }
@@ -77,6 +89,26 @@ public class Floor implements Runnable {
             e.printStackTrace();
             System.out.println("Floor failed to send Request to Scheduler");
             return false;
+        }
+    }
+
+    /**
+     * Purely for testing purposes has same logic
+     * @param buttonDirection
+     * @param isTest
+     * @return
+     */
+    public void pushButton(boolean buttonDirection, boolean isTest){
+        System.out.println("Floor " + floorNumber + ": Request for " + (buttonDirection ? "UP" : "DOWN") + " button pushed and sent.");
+
+        upLamp = new FloorLamp();
+        // Update lamp status based on the button pressed
+        if (buttonDirection) {
+            upLamp.turnOnLamp();
+            System.out.println("Up lamp turned on at floor " + floorNumber);
+        } else {
+            downLamp.turnOnLamp();
+            System.out.println("Down lamp turned on at floor " + floorNumber);
         }
     }
 

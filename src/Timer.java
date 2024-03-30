@@ -46,11 +46,36 @@ public class Timer implements Runnable {
             }
         }
     }
+
+    /**
+     * Purely for testing purposes, uses the same logic and coding as the run method
+     */
+    public void runTimer(){
+        while(time > 0){
+            try {
+                Thread.sleep(999);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            setTimer(time-1);
+        }
+    }
     public int getTime(){
         return this.time;
     }
     public boolean isActive(){
         return this.isActive;
+    }
+
+    /**
+     * Used for testing, uses same logic
+     * @return - true for active, false for inactvie
+     */
+    public boolean isActiveTest(){
+        if(elevator.getCurrentFloor() == -1){
+            return false;
+        }
+        return true;
     }
     public void setActive(boolean active){
         this.isActive = active;

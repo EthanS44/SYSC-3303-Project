@@ -1,16 +1,19 @@
-3303 Project - Iteration 3
+
+3303 Project - Iteration 4
 Group 5
 Ethan Stewart, Sam Wilson, Forewa Aboderin, Abody Majeed, Kareem Abdo
 ----------------------------------------------------------------------
 
-The included java project is an elevator simulation using threads for iteration 3 of the 3303 group project.
-There are 20 classes including elevator and scheduler states. There are also 6 test classes and 2 interfaces. 
+The included java project is an elevator simulation using threads for iteration 4 of the 3303 group project.
+There are 21 classes including elevator and scheduler states. There are also 7 test classes and 2 interfaces. 
+
+In this iteration, our team added a timer class and the logic required to handle multiple different faults. The first being a floor timer fault and the second being a door fault.
 
 To run the simulation, open the project file "Elevator Simulator" in intellij, navigate to "Main.java" and click
-run. A series of button pushes are ready to run to observe the movement of the elevators.
+run. A series of button pushes is ready to be run to observe the movement of the elevators.
 To test the classes, navigate to their respective testing classes and run them. 
 
-UML Sequence, UML Class and state diagrams are included in "Iteration 3 UML Sequence.pdf", "Iteration 3 UML Class.pdf", 
+UML Sequence, UML Class and state diagrams are included in "Iteration 4 UML Sequence.pdf", "Iteration 4 UML Class.pdf", "Iteration 4 Timing Diagram.pdf",
 "Scheduler State Diagram", and "Elevator State Diagram" files respectively.
 
 
@@ -52,3 +55,14 @@ Sam - most of elevator class, elevatorButton class, scheduler class, floor class
 
 Abody - DirectionLamp class, elevator class, state machine diagram, scheduler class, test classes
 
+Iteration 4 Responsibilities:
+
+Ethan - Elevator class, scheduler class
+
+Forewa - Elevator class
+
+Kareem - Elevator class
+
+Sam - Timer class, Elevator class
+
+Abody - Test classes, timing diagram

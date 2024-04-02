@@ -29,6 +29,7 @@ class ElevatorWaiting implements ElevatorState {
             if (!elevator.getInstructionBox().isEmpty()) { // we have an instruction
                 elevator.setNextFloor(elevator.calculateNextFloor());
                 System.out.println("Elevator " + elevator.getElevatorID() + ": Next floor set to " + elevator.calculateNextFloor());
+
                 //Turn on direction lamp
                 elevator.getDirectionLamp().turnOnLamp(elevator.getMotor().getCurrentDirection());
                 elevator.setCurrentState(new ElevatorMoving());

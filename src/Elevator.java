@@ -692,21 +692,6 @@ public class Elevator implements Runnable {
 
         timerThread.start();
 
-
-        /*
-        // Push button 7
-        if (elevatorID == 1) {
-            this.buttonList.get(5).pushButton();
-        }
-
-        if (elevatorID == 2) {
-            this.buttonList.get(4).pushButton();
-            this.buttonList.get(2).pushButton();
-        }
-
-         */
-
-
         while (true) {
             request();
         }

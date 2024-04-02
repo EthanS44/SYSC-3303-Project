@@ -71,12 +71,13 @@ class ElevatorHandlingDoor implements ElevatorState{
                 Thread.currentThread().interrupt(); // Handle thread interruption
                 System.out.println("Elevator " + elevator.getElevatorID() + ": Interrupted while door open.");
             }
-
-            /* try { uncomment this to cause a door fault and disable the elevator upon arrival
-                Thread.sleep(10000);
-            } catch (InterruptedException e){
-
-            } */
+            //uncomment this to cause a door fault and disable the elevator upon arrival
+            if(elevator.getElevatorID() == 2) {
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                }
+            }
 
             elevator.setDoorOpen(false); // Simulating door closing
             elevator.killTimer();
@@ -404,12 +405,13 @@ public class Elevator implements Runnable {
             }
         }
 
-        /* Uncommenting this will cause the elevator to be diabled upon arrival
-        try { // CORN
-            Thread.sleep(10000);
-        } catch (InterruptedException e){
-
-        } */
+        //Uncommenting this will cause the elevator to be diabled upon arrival
+        if (this.elevatorID == 1) {
+            try { // CORN
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+            }
+        }
 
         if (this.isEnabled()){
             System.out.println("Elevator " + elevator.getElevatorID() + " Arrived at floor " + elevator.getCurrentFloor());

@@ -171,14 +171,13 @@ public class Floor implements Runnable {
             }
 
 
-            /*
-            if(i == 40000){
-                if (floorNumber == 4){
+            if(i == 50000){
+                if (floorNumber == 9){
                     pushButton(true);
                 }
             }
 
-
+            /*
             if(i == 50000){
                 if (floorNumber == 2){
                     pushButton(true);

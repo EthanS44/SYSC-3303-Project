@@ -19,11 +19,11 @@ public class FloorTest {
         Floor floor = new Floor(5);
 
         // Test pressing the UP button on the floor
-        assertTrue(floor.pushButton(true));
+        assertTrue(floor.pushButton(true, 0));
         assertTrue(floor.isWaiting());
 
         // Test pressing the DOWN button on the floor
-        assertTrue(floor.pushButton(false));
+        assertTrue(floor.pushButton(false, 0));
         assertTrue(floor.isWaiting());
     }
 

@@ -79,7 +79,7 @@ public class Scheduler implements Runnable {
         this.elevator3Direction = 1;
         this.elevator4Direction = 1;
 
-        // creates 2 sockets
+        // creates 3 sockets
         try {
             receiveSocket = new DatagramSocket(socketNum1);
             sendReceiveSocket = new DatagramSocket(socketNum2);
@@ -324,7 +324,7 @@ public class Scheduler implements Runnable {
 
         // Create new packet to hold received data
 
-        byte[] data = new byte[200];
+        byte[] data = new byte[250];
         DatagramPacket packetToReceive = null;
 
         packetToReceive = new DatagramPacket(data, data.length);

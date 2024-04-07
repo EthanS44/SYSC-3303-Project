@@ -40,10 +40,16 @@ class ElevatorWaiting implements ElevatorState {
 
 
 class ElevatorMoving implements ElevatorState {
+    boolean counter = false;
     @Override
     public void handle(Elevator elevator) {
-        System.out.println("Elevator " + elevator.getElevatorID() + ": Changed to ElevatorMoving State");
-        elevator.goToFloor(elevator);
+        if (!counter) {
+            System.out.println("Elevator " + elevator.getElevatorID() + ": Changed to ElevatorMoving State");
+            counter = true;
+            elevator.goToFloor(elevator);
+        } else {
+            elevator.setCurrentState(new ElevatorWaiting());
+        }
     }
 }
 class ElevatorHandlingDoor implements ElevatorState{
@@ -319,7 +325,7 @@ public class Elevator implements Runnable {
         // if instruction box is only of size 1, correct the motor direction
         if (instructionBox.size() == 1 && floorToGo < currentFloor) {
             motor.setDirection(0);
-        } else {
+        } else if (instructionBox.size() == 1){
             motor.setDirection(1);
         }
         return floorToGo;

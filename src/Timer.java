@@ -39,9 +39,11 @@ public class Timer implements Runnable {
                     this.time--;
                     // System.out.println("Time: " + time);
                 } else if (time == 0) {
-                    this.isActive = false;
-                    System.out.println("Elevator timeout - Elevator "+ this.elevator.getElevatorID() + " Disabled.");
-                    this.elevator.disableElevator();
+                    if(isActive()){
+                        this.isActive = false;
+                        System.out.println("Elevator timeout - Elevator "+ this.elevator.getElevatorID() + " Disabled.");
+                        this.elevator.disableElevator();
+                    }
                 }
             }
         }

@@ -18,6 +18,7 @@ public class Request implements Serializable  {
      * @param buttonId - if isElevator = true: buttonId = floor button #. If isElevator = false: 1 = up, 0 = down.
      * @param currentFloor - What floor the elevator is currently on/what floor the request is being made from
      * @param elevatorFloorID - What floor or elevator the request is coming from
+     * @param triggerFault - 0 - no fault, 1 - transient fault, 2 - hard fault
      */
     public Request(boolean isElevator, LocalDateTime time, int indexNumber, int buttonId, int currentFloor, int elevatorFloorID){
         this.isElevator = isElevator;
@@ -26,6 +27,7 @@ public class Request implements Serializable  {
         this.buttonId = buttonId;
         this.currentFloor = currentFloor;
         this.elevatorFloorID = elevatorFloorID;
+        this.triggerFault = triggerFault;
     }
 
     /**

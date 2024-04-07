@@ -4,15 +4,17 @@ public class Instruction implements Serializable {
 
     private boolean direction; // Up = true, down = false
     private int floorNumber; // Just the floorNumber to go to
+    private int triggerFault;
 
     /**
      * Constructor for the instruction class
      * @param direction - Direction for elevator to go to
      * @param floorNumber - Floor for the elevator to go to
      */
-    public Instruction(boolean direction, int floorNumber){
+    public Instruction(boolean direction, int floorNumber, int triggerFault){
         this.direction = direction; // Up = true, down = false
         this.floorNumber = floorNumber; // Just the floorNumber to go to
+        this.triggerFault = triggerFault; // 0 = no fault, 1 = transient fault(door fault), 2 = hard fault(floor fault)
     }
 
     /**

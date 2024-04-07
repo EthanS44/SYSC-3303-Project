@@ -9,6 +9,7 @@ public class Request implements Serializable  {
     private final int buttonId; // if isElevator = true: buttonId = floor button #. If isElevator = false: 1 = up, 0 = down.
     private final int currentFloor;
     private final int elevatorFloorID;
+    private final int triggerFault;
 
     /**
      * Constructor for the Request class
@@ -20,7 +21,7 @@ public class Request implements Serializable  {
      * @param elevatorFloorID - What floor or elevator the request is coming from
      * @param triggerFault - 0 - no fault, 1 - transient fault, 2 - hard fault
      */
-    public Request(boolean isElevator, LocalDateTime time, int indexNumber, int buttonId, int currentFloor, int elevatorFloorID){
+    public Request(boolean isElevator, LocalDateTime time, int indexNumber, int buttonId, int currentFloor, int elevatorFloorID, int triggerFault){
         this.isElevator = isElevator;
         this.time = time;
         this.indexNumber = indexNumber;
@@ -71,6 +72,10 @@ public class Request implements Serializable  {
      * @return - What floor the elevator is currently on/what floor the request is being made from
      */
     public int getCurrentFloor() {return currentFloor;}
+
+    public int getTriggerFault(){
+        return triggerFault;
+    }
 
     public static byte[] toByteArray(Request request) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

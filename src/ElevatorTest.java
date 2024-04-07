@@ -16,7 +16,7 @@ public class ElevatorTest {
         Thread elevator1Thread = new Thread(elevator1);
         elevator1Thread.start();
 
-        Instruction instruction = new Instruction(true, 3);
+        Instruction instruction = new Instruction(true, 3,0);
         elevator1.getInstructionBox().add(instruction);
         elevator1.calculateNextFloor();
 
@@ -36,7 +36,7 @@ public class ElevatorTest {
         elevator1Thread.start();
 
         elevator1.setCurrentFloor(5);
-        Instruction instruction = new Instruction(false, 2);
+        Instruction instruction = new Instruction(false, 2,0);
         elevator1.getInstructionBox().add(instruction);
         elevator1.calculateNextFloor();
 
@@ -57,7 +57,7 @@ public class ElevatorTest {
         timer.setElevator(elevator1);
 
         elevator1.setCurrentFloor(5);
-        Instruction instruction = new Instruction(false, 2);
+        Instruction instruction = new Instruction(false, 2,0);
         elevator1.getInstructionBox().add(instruction);
         elevator1.runElevator(3);
         timer.runTimer();

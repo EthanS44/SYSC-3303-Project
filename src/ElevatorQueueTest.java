@@ -11,7 +11,7 @@ public class ElevatorQueueTest {
         LocalDateTime currentTime = LocalDateTime.now();
 
         // Test putting a request into the request box
-        Request testRequest = new Request(false, currentTime, 1, 1, 1, 1);
+        Request testRequest = new Request(false, currentTime, 1, 1, 1, 1, 0);
         elevatorQueue2.putInRequestBox(testRequest);
         //assert that request box is not empty
         assertFalse(elevatorQueue2.isRequestBoxEmpty());
@@ -29,12 +29,12 @@ public class ElevatorQueueTest {
         ElevatorQueue elevatorQueue2 = new ElevatorQueue();
 
         // Test putting an instruction into the instruction box
-        Instruction testInstruction = new Instruction(true, 3);
+        Instruction testInstruction = new Instruction(true, 3,0);
         elevatorQueue2.putInInstructionBox(testInstruction);
 
         //assert that Instruction box is not empty
         assertFalse(elevatorQueue2.isInstructionBoxEmpty());
-        Instruction testInstruction2 = new Instruction(true, 4);
+        Instruction testInstruction2 = new Instruction(true, 4,0);
         elevatorQueue2.putInInstructionBox(testInstruction2);
 
         //assert the size of the instruction box increased.

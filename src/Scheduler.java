@@ -21,6 +21,7 @@ public class Scheduler implements Runnable {
     private int elevator1Position, elevator2Position, elevator3Position, elevator4Position;
     private int elevator1Direction, elevator2Direction, elevator3Direction, elevator4Direction; // 1 is up 0 is down
     private int elevator1Enabled, elevator2Enabled, elevator3Enabled, elevator4Enabled;
+    private int elevator1Capacity, elevator2Capacity, elevator3Capacity, elevator4Capacity;
 
 
     DatagramSocket receiveSocket;
@@ -79,7 +80,7 @@ public class Scheduler implements Runnable {
         this.elevator3Direction = 1;
         this.elevator4Direction = 1;
 
-        // creates 2 sockets
+        // creates 3 sockets
         try {
             receiveSocket = new DatagramSocket(socketNum1);
             sendReceiveSocket = new DatagramSocket(socketNum2);
@@ -151,6 +152,7 @@ public class Scheduler implements Runnable {
         //This is for gathering information about what will be in the instruction
         boolean tempDirection;
         int tempFloorNumber;
+        int triggerFault = requestToHandle.getTriggerFault();
 
         //If it's an elevator it has its own set of rules
         if (requestToHandle.isElevator()) {
@@ -171,7 +173,7 @@ public class Scheduler implements Runnable {
         }
         receiveResponse();
         //Convert to packet and send instruction
-        sendInstructionToElevator(new Instruction(tempDirection, tempFloorNumber));
+        sendInstructionToElevator(new Instruction(tempDirection, tempFloorNumber, triggerFault));
         System.out.println("Scheduler: Request handled");
         // remove request from requestBox
         requestBox.remove(requestToHandle);
@@ -229,6 +231,9 @@ public class Scheduler implements Runnable {
             System.exit(1);
         }
         System.out.println("Scheduler: Instruction sent to Elevator " + closestElevator + ".\n");
+
+        //update elevator capacity
+        //
     }
 
    public void receiveResponse(){ //updates elevator positions and directions and send to floor to turn off lamps and buttons
@@ -324,7 +329,7 @@ public class Scheduler implements Runnable {
 
         // Create new packet to hold received data
 
-        byte[] data = new byte[200];
+        byte[] data = new byte[250];
         DatagramPacket packetToReceive = null;
 
         packetToReceive = new DatagramPacket(data, data.length);
@@ -424,11 +429,28 @@ public class Scheduler implements Runnable {
                 return -1;
         }
     }
+
+    // get the direction of a specific elevator
+    private int getElevatorCapacity(int elevatorNumber) {
+        switch (elevatorNumber) {
+            case 1:
+                return elevator1Capacity;
+            case 2:
+                return elevator2Capacity;
+            case 3:
+                return elevator3Capacity;
+            case 4:
+                return elevator4Capacity;
+            default:
+                return -1;
+        }
+    }
+
     public int getClosestElevator(int floorNumber) {
         int closestElevator = -1;
         int minDistance = Integer.MAX_VALUE; // Initialize minDistance to maximum possible value
 
-        for (int i = 1; i <= 4; i++) { // Updated loop for 4 elevators
+        for (int i = 1; i <= 3; i++) { // Updated loop for 4 elevators
             int distance = Math.abs(getElevatorPosition(i) - floorNumber); // calculate distance to floor
 
             // Check if the elevator is already at the requested floor

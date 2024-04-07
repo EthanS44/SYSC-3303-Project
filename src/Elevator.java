@@ -29,6 +29,7 @@ class ElevatorWaiting implements ElevatorState {
             if (!elevator.getInstructionBox().isEmpty()) { // we have an instruction
                 elevator.setNextFloor(elevator.calculateNextFloor());
                 System.out.println("Elevator " + elevator.getElevatorID() + ": Next floor set to " + elevator.calculateNextFloor());
+
                 //Turn on direction lamp
                 elevator.getDirectionLamp().turnOnLamp(elevator.getMotor().getCurrentDirection());
                 elevator.setCurrentState(new ElevatorMoving());
@@ -39,10 +40,16 @@ class ElevatorWaiting implements ElevatorState {
 
 
 class ElevatorMoving implements ElevatorState {
+    boolean counter = false;
     @Override
     public void handle(Elevator elevator) {
-        System.out.println("Elevator " + elevator.getElevatorID() + ": Changed to ElevatorMoving State");
-        elevator.goToFloor(elevator);
+        if (!counter) {
+            System.out.println("Elevator " + elevator.getElevatorID() + ": Changed to ElevatorMoving State");
+            counter = true;
+            elevator.goToFloor(elevator);
+        } else {
+            elevator.setCurrentState(new ElevatorWaiting());
+        }
     }
 }
 class ElevatorHandlingDoor implements ElevatorState{
@@ -122,6 +129,7 @@ public class Elevator implements Runnable {
     private boolean doorOperationSuccess = true; // Assume door operation is successful by default
     private int doorRetryCounter = 0; // Counter for door operation attempts
     private Timer timer;
+    private ArrayList<Integer> floorFaults;
 
     /**
      * Constructor for Elevator
@@ -143,6 +151,10 @@ public class Elevator implements Runnable {
         this.motor = new ElevatorMotor();
         this.directionLamp = new DirectionLamp(this);
         this.elevatorEnabled = true;
+        this.floorFaults = new ArrayList<>();
+        for(int i = 1; i < 22; i++){
+            this.floorFaults.add(0);
+        }
 
         // Set up sockets
         try {
@@ -222,6 +234,12 @@ public class Elevator implements Runnable {
         this.elevatorEnabled = false;
         this.getMotor().setDirection(-1); //set direction to -1 to signify a disabled elevator
         this.sendResponse(true);
+        try {
+            Thread.sleep(999999999);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Reset interrupt status
+            System.out.println("Sleep failed");
+        }
     }
 
     /**
@@ -319,7 +337,7 @@ public class Elevator implements Runnable {
         // if instruction box is only of size 1, correct the motor direction
         if (instructionBox.size() == 1 && floorToGo < currentFloor) {
             motor.setDirection(0);
-        } else {
+        } else if (instructionBox.size() == 1){
             motor.setDirection(1);
         }
         return floorToGo;
@@ -421,9 +439,14 @@ public class Elevator implements Runnable {
 
             // stop elevator motor
             elevator.getMotor().stop();
-            if (currentFloor == nextFloor) {
-                elevator.getMotor().changeDirection();
+
+            if (currentFloor >= 11) {
+                elevator.getMotor().setDirection(0);
             }
+            else {
+                elevator.getMotor().setDirection(1);
+            }
+
             elevator.sendResponse(true);
 
             // set state to door handling
@@ -693,21 +716,6 @@ public class Elevator implements Runnable {
         this.timer.setElevator(this);
 
         timerThread.start();
-
-
-        /*
-        // Push button 7
-        if (elevatorID == 1) {
-            this.buttonList.get(5).pushButton();
-        }
-
-        if (elevatorID == 2) {
-            this.buttonList.get(4).pushButton();
-            this.buttonList.get(2).pushButton();
-        }
-
-         */
-
 
         while (true) {
             request();

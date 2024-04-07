@@ -1,10 +1,10 @@
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
+import java.io.File;
+
 public class Main {
     public static void main(String[] args) {
 
-        // create an elevator queue object
-        ElevatorQueue elevatorQueue = new ElevatorQueue();
+        Parser parser = new Parser(80);
+        File inputFile = new File("inputFile.txt");
 
         //create scheduler thread
         Thread schedulerThread = new Thread(new Scheduler(), "Elevator Scheduler");
@@ -71,5 +71,6 @@ public class Main {
         elevatorThread3.start();
         //elevatorThread4.start();
 
+        parser.parseTextFile(inputFile);
     }
 }

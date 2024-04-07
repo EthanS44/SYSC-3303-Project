@@ -15,18 +15,22 @@ public class Floor implements Runnable {
     private boolean waiting;
     private DatagramSocket sendSocket;
     private DatagramSocket receiveSocket;
+    private DatagramSocket requestSocket;
     private InetAddress schedulerAddress;
     private final int schedulerPort = 41; // Port where the scheduler is listening
     private FloorButton upButton, downButton;
     private FloorLamp upLamp, downLamp;
+    private int requestPort;
 
     public Floor(int floorNumber) {
         this.floorNumber = floorNumber;
+        this.requestPort = floorNumber + 100;
         this.waiting = false;
         this.port = floorNumber;
         try {
             this.sendSocket = new DatagramSocket();
             this.receiveSocket = new DatagramSocket(port);
+            this.requestSocket = new DatagramSocket(requestPort);
             this.schedulerAddress = InetAddress.getLocalHost(); // Assuming scheduler is on the same machine
         } catch (IOException e) {
             e.printStackTrace();
@@ -62,10 +66,10 @@ public class Floor implements Runnable {
         return floorNumber;
     }
 
-    public boolean pushButton(boolean buttonDirection) {
+    public boolean pushButton(boolean buttonDirection, int triggerFault) {
         int buttonId = buttonDirection ? 1 : 0;
         LocalDateTime currentTime = LocalDateTime.now();
-        Request newRequest = new Request(false, currentTime, floorNumber, buttonId, floorNumber, floorNumber);
+        Request newRequest = new Request(false, currentTime, floorNumber, buttonId, floorNumber, floorNumber, triggerFault);
 
         try {
             byte[] requestData = Request.toByteArray(newRequest);
@@ -90,6 +94,28 @@ public class Floor implements Runnable {
             System.out.println("Floor failed to send Request to Scheduler");
             return false;
         }
+    }
+
+    public void receiveRequest(){
+        byte[] data = new byte[2];
+        DatagramPacket packetToReceive = new DatagramPacket(data, data.length);
+
+        try {
+            requestSocket.setSoTimeout(1);
+            requestSocket.receive(packetToReceive);
+        } catch (SocketTimeoutException e) {
+            return;
+        } catch (IOException e) {
+            System.out.println("Floor failed to receive request - IOException");
+            return;
+        }
+
+        System.out.println("Floor Receiving request");
+        //collect the received packet and convert it to response
+
+        boolean direction = packetToReceive.getData()[0] == 1;
+        int triggerFault = packetToReceive.getData()[1];
+        this.pushButton(direction, triggerFault);
     }
 
     /**
@@ -153,41 +179,10 @@ public class Floor implements Runnable {
 
     @Override
     public void run() {
-        // Push buttons
-        if (floorNumber == 5){
-            pushButton(true);
-        }
-
-        int i = 0;
         while(true){
-
-
-            i+=1;
-
-            if(i == 25000){
-                if (floorNumber == 7){
-                    pushButton(true);
-                }
-            }
-
-
-            if(i == 50000){
-                if (floorNumber == 9){
-                    pushButton(true);
-                }
-            }
-
-            /*
-            if(i == 50000){
-                if (floorNumber == 2){
-                    pushButton(true);
-                }
-            }
-
-             */
-
-
+            receiveRequest();
             receiveResponse();
         }
     }
 }
+

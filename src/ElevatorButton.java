@@ -12,7 +12,7 @@ public class ElevatorButton {
     public void pushButton() {
         System.out.println("Elevator button " + buttonNo + " pushed!");
         LocalDateTime currentTime = LocalDateTime.now();
-        Request request = new Request(true, currentTime, this.elevator.getElevatorID(), buttonNo, this.elevator.getCurrentFloor(), this.elevator.getElevatorID());
+        Request request = new Request(true, currentTime, this.elevator.getElevatorID(), buttonNo, this.elevator.getCurrentFloor(), this.elevator.getElevatorID(), 0);
         elevator.sendRequest(request);
         pressed = true;
     }
@@ -20,7 +20,7 @@ public class ElevatorButton {
     public void pushButtonTest(){
         System.out.println("Elevator button " + buttonNo + " pushed!");
         LocalDateTime currentTime = LocalDateTime.now();
-        Request request = new Request(true, currentTime, this.elevator.getElevatorID(), buttonNo, this.elevator.getCurrentFloor(), this.elevator.getElevatorID());
+        Request request = new Request(true, currentTime, this.elevator.getElevatorID(), buttonNo, this.elevator.getCurrentFloor(), this.elevator.getElevatorID(),0);
 
         //Assuming Request was actually sent
         System.out.println("Packet Successfully Sent!");

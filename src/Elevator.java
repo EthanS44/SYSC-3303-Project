@@ -196,16 +196,18 @@ public class Elevator implements Runnable {
      */
     public Elevator(int elevatorID){
         this.elevatorID = elevatorID;
-        this.arrivalSensors = new ArrayList<ArrivalSensor>();
-        this.instructionBox = new ArrayList<Instruction>();
-        this.motor = new ElevatorMotor();
-        this.directionLamp = new DirectionLamp(this);
-        this.elevatorEnabled = true;
         this.currentFloor = 1;
         this.nextFloor = 1;
         this.doorOpen = false;
         this.stopped = true;
         this.currentState = new ElevatorWaiting();
+        this.buttonList = new ArrayList<>();
+        this.arrivalSensors = new ArrayList<ArrivalSensor>();
+        this.instructionBox = new ArrayList<Instruction>();
+        this.motor = new ElevatorMotor();
+        this.directionLamp = new DirectionLamp(this);
+        this.elevatorEnabled = true;
+        this.floorFaults = new ArrayList<>();
     }
 
     /**

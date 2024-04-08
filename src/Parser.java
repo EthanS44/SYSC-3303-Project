@@ -8,6 +8,7 @@ import java.net.SocketException;
 import java.time.LocalDateTime;
 import java.io.*;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Parser {
@@ -19,6 +20,8 @@ public class Parser {
             throw new RuntimeException(e);
         }
     }
+
+    public Parser(){}
 
     public void parseTextFile(File textfile){
         try (BufferedReader br = new BufferedReader(new FileReader(textfile))) {
@@ -65,6 +68,69 @@ public class Parser {
 
 
     }
+
+    public ArrayList<Instruction> testParseTextFile(File textfile){
+        ArrayList<Instruction> dataList = new ArrayList<Instruction>();
+        Instruction data1;
+        Instruction data2;
+        Instruction data3;
+        int index = 0;
+        try (BufferedReader br = new BufferedReader(new FileReader(textfile))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                // Ignore comment lines
+                if (!line.startsWith("#")) {
+                    String[] instructions = line.split(" ");
+                    System.out.println(Arrays.toString(instructions));
+
+                    boolean isElevator = Boolean.parseBoolean(instructions[0]);
+                    //LocalDateTime time = LocalDateTime.parse(instructions[1], DateTimeFormatter.ofPattern("HH:mm:ss:SSS"));
+                    String time = instructions[1];
+                    int indexNumber = Integer.parseInt(instructions[2]);
+                    int buttonID = Integer.parseInt(instructions[3]);
+
+                    int triggerFault = 0;
+
+                    switch (instructions[4]) {
+                        case "none":
+                            triggerFault = 0;
+                            break;
+                        case "transient":
+                            triggerFault = 1;
+                            break;
+                        case "hard":
+                            triggerFault = 2;
+                            break;
+                    }
+                    // data is the byte array that represents the Request
+                    byte[] data = new byte[2];
+                    data[0] = (byte) buttonID;
+                    data[1] = (byte) triggerFault;
+
+                    boolean buttonBoolean = (buttonID == 0)? true: false;
+
+                    // Send packet to Scheduler receive socket
+                    if (index == 0) {
+                        data1 = new Instruction(buttonBoolean, indexNumber, triggerFault);
+                        dataList.add(data1);
+                    } else if (index == 1) {
+                        data2 = new Instruction(buttonBoolean, indexNumber, triggerFault);
+                        dataList.add(data2);
+                    } else if (index == 2) {
+                        data3 = new Instruction(buttonBoolean, indexNumber, triggerFault);
+                        dataList.add(data3);
+                    }
+                    index++;
+                }
+
+            }
+            return dataList;
+        } catch (IOException e) {
+        e.printStackTrace();
+        }
+        return null;
+    }
+
     private void sendRequestToFloor(int floorID, int direction, int faultType){
         try {
             // data is the byte array that represents the Request

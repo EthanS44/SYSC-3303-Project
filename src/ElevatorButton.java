@@ -9,7 +9,7 @@ public class ElevatorButton {
         this.buttonNo = buttonNumber;
     }
 
-    public void pushButton() {
+    public void pushButton(int faultType) {
         System.out.println("Elevator button " + buttonNo + " pushed!");
         LocalDateTime currentTime = LocalDateTime.now();
         Request request = new Request(true, currentTime, this.elevator.getElevatorID(), buttonNo, this.elevator.getCurrentFloor(), this.elevator.getElevatorID(), 0);

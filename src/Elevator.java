@@ -98,6 +98,12 @@ class ElevatorHandlingDoor implements ElevatorState{
             }
         }
 
+        // Increment total moves
+        if (elevator.incrementTotalMoves()){
+            long endTime = System.currentTimeMillis();
+            System.out.println("Total time elapsed: " + (endTime - elevator.getStartTime()) + "ms");
+        }
+
         // remove latest instruction from box
         elevator.getInstructionBox().removeIf(instruction -> instruction.getFloorNumber() == elevator.getCurrentFloor());
 
@@ -122,9 +128,7 @@ public class Elevator implements Runnable {
     private boolean doorOpen;
     private boolean elevatorEnabled;
     private ElevatorState currentState;
-    DatagramSocket sendSocket;
-    DatagramSocket receiveSocket;
-    DatagramSocket acknowledgementSocket;
+    DatagramSocket sendSocket, receiveSocket, acknowledgementSocket, requestSocket, endSocket;
     private ArrayList<ElevatorButton> buttonList;
     private ArrayList<ArrivalSensor> arrivalSensors;
     private ArrayList<Instruction> instructionBox;
@@ -169,6 +173,8 @@ public class Elevator implements Runnable {
             this.sendSocket = new DatagramSocket(sendPort);
             this.receiveSocket = new DatagramSocket(receivePort);
             this.acknowledgementSocket = new DatagramSocket(acknowledgmentPort);
+            this.requestSocket = new DatagramSocket(requestPort);
+            this.endSocket = new DatagramSocket(748 + (elevatorID * 20) - 20);
         } catch (SocketException se) {
             se.printStackTrace();
             System.out.println("Failed to create Elevator Sockets");
@@ -189,6 +195,8 @@ public class Elevator implements Runnable {
             ArrivalSensor newSensor = new ArrivalSensor(i, this);
             arrivalSensors.add(newSensor);
         }
+
+        startTime = System.currentTimeMillis();
     }
 
     /**
@@ -751,6 +759,58 @@ public class Elevator implements Runnable {
         }
     }
 
+    public void receiveRequest(){
+        byte[] data = new byte[2];
+        DatagramPacket packetToReceive = new DatagramPacket(data, data.length);
+
+        try {
+            requestSocket.setSoTimeout(1);
+            requestSocket.receive(packetToReceive);
+        } catch (SocketTimeoutException e) {
+            return;
+        } catch (IOException e) {
+            System.out.println("Elevator failed to receive request - IOException");
+            return;
+        }
+
+        System.out.println("Elevator Receiving request");
+        //collect the received packet and convert it to response
+
+        int buttonID = packetToReceive.getData()[0];
+        int triggerFault = packetToReceive.getData()[1];
+
+        this.buttonList.get(buttonID).pushButton(triggerFault);
+    }
+    public void receiveEndRequest(){
+        byte[] data = new byte[2];
+        DatagramPacket packetToReceive = new DatagramPacket(data, data.length);
+
+        try {
+            endSocket.setSoTimeout(1);
+            endSocket.receive(packetToReceive);
+        } catch (SocketTimeoutException e) {
+            return;
+        } catch (IOException e) {
+            System.out.println("Elevator failed to receive request - IOException");
+            return;
+        }
+
+        System.out.println("Elevator Receiving Number of Instructions");
+
+        int moveNumber = packetToReceive.getData()[0];
+
+        totalInstructions = moveNumber;
+        System.out.println(totalInstructions);
+    }
+
+    public void setFloorFaults(ArrayList<Integer> floorFaults) {
+        this.floorFaults = floorFaults;
+    }
+
+    public void setElevatorEnabled(boolean elevatorEnabled) {
+        this.elevatorEnabled = elevatorEnabled;
+    }
+
     @Override
     public void run() {
         // Timer setup
@@ -762,6 +822,8 @@ public class Elevator implements Runnable {
         timerThread.start();
 
         while (true) {
+            receiveRequest();
+            receiveEndRequest();
             request();
         }
     }

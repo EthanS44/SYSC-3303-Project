@@ -37,11 +37,10 @@ public class Parser {
                     String time = instructions[1];
                     int indexNumber = Integer.parseInt(instructions[2]);
                     int buttonId = Integer.parseInt(instructions[3]);
-                    int currentFloor = Integer.parseInt(instructions[4]);
-                    int elevatorFloorId = Integer.parseInt(instructions[5]);
+
                     int triggerFault = 0;
 
-                    switch(instructions[6]){
+                    switch(instructions[4]){
                         case "none":
                             triggerFault = 0;
                             break;
@@ -58,6 +57,7 @@ public class Parser {
                     } else {
                         sendRequestToFloor(indexNumber, buttonId, triggerFault);
                     }
+                    Thread.sleep(20000);
                 }
             }
         } catch (IOException e) {

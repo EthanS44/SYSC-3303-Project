@@ -23,11 +23,9 @@ public class Scheduler implements Runnable {
     private int elevator1Enabled, elevator2Enabled, elevator3Enabled, elevator4Enabled;
     private int elevator1Capacity, elevator2Capacity, elevator3Capacity, elevator4Capacity;
 
-
     DatagramSocket receiveSocket;
     DatagramSocket sendReceiveSocket;
     DatagramSocket responseSocket;
-
 
     public Scheduler(){
         this.requestBox = new ArrayList<Request>();
@@ -106,7 +104,6 @@ public class Scheduler implements Runnable {
             scheduler.receiveResponse();
             receiveRequest();
 
-
             if (!scheduler.noPendingRequests()){
                 scheduler.setCurrentState(new HandlingRequest());
                 System.out.println("Scheduler state changed to HandlingRequest\n");
@@ -125,8 +122,6 @@ public class Scheduler implements Runnable {
             System.out.println("Scheduler state changed to SchedulerWaiting\n");
         }
     }
-
-
 
     //new
     public schedulerState getCurrentState() { return currentState; }
@@ -248,7 +243,7 @@ public class Scheduler implements Runnable {
    public void receiveResponse(){ //updates elevator positions and directions and send to floor to turn off lamps and buttons
 
        // Receive response packet from Elevator
-           byte[] data = new byte[200];
+           byte[] data = new byte[250];
            DatagramPacket packetToReceive = new DatagramPacket(data, data.length);
 
            try {
@@ -393,7 +388,7 @@ public class Scheduler implements Runnable {
                     break;
             }
             try {
-                byte[] data2 = new byte[200];
+                byte[] data2 = new byte[250];
                 DatagramPacket acknowledgementPacketToSend;
                 acknowledgementPacketToSend = new DatagramPacket(data2, data2.length, InetAddress.getLocalHost(), sendPort);
 

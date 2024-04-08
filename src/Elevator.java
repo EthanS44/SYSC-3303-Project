@@ -1,3 +1,5 @@
+import org.junit.rules.Stopwatch;
+
 import java.io.IOException;
 import java.net.*;
 import java.time.*;
@@ -79,11 +81,13 @@ class ElevatorHandlingDoor implements ElevatorState{
                 System.out.println("Elevator " + elevator.getElevatorID() + ": Interrupted while door open.");
             }
             //uncomment this to cause a door fault and disable the elevator upon arrival
-            if(elevator.getElevatorID() == 2) {
+            if(elevator.getFloorFaults().get(elevator.getCurrentFloor()) == 1) {
+                System.out.println("Triggering door fault in elevator " + elevator.getElevatorID());
                 try {
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
                 }
+                elevator.getFloorFaults().set(elevator.getCurrentFloor(), 0);
             }
 
             elevator.setDoorOpen(false); // Simulating door closing
@@ -130,6 +134,10 @@ public class Elevator implements Runnable {
     private int doorRetryCounter = 0; // Counter for door operation attempts
     private Timer timer;
     private ArrayList<Integer> floorFaults;
+    private static int totalMoves = 0;
+    private static int totalInstructions;
+    private static long startTime;
+
 
     /**
      * Constructor for Elevator
@@ -138,7 +146,7 @@ public class Elevator implements Runnable {
      * @param sendPort    - Port number the elevator sends from
      * @param receivePort - Port the elevator receives from
      */
-    public Elevator(int elevatorID, int sendPort, int receivePort, int acknowledgmentPort) {
+    public Elevator(int elevatorID, int sendPort, int receivePort, int acknowledgmentPort, int requestPort) {
         this.elevatorID = elevatorID;
         this.currentFloor = 1;
         this.nextFloor = 1;
@@ -152,7 +160,7 @@ public class Elevator implements Runnable {
         this.directionLamp = new DirectionLamp(this);
         this.elevatorEnabled = true;
         this.floorFaults = new ArrayList<>();
-        for(int i = 1; i < 22; i++){
+        for(int i = 1; i < 23; i++){
             this.floorFaults.add(0);
         }
 
@@ -226,6 +234,34 @@ public class Elevator implements Runnable {
         this.elevatorEnabled = true;
     }
 
+    public long getStartTime() {
+        return startTime;
+    }
+
+    /**
+     * This methods gets totalMoves
+     * @return int totalMoves
+     */
+    public int getTotalMoves(){
+        return totalMoves;
+    }
+
+    /**
+     * this method increments total moves and it compares it to total instructions
+     * @return boolean
+     */
+    public boolean incrementTotalMoves(){
+        totalMoves++;
+        if (totalMoves == totalInstructions){
+            return true;
+        }
+        return false;
+    }
+
+    public ArrayList<Integer> getFloorFaults(){
+        return floorFaults;
+    }
+
     /**
      * This method disables the elevator
      */
@@ -252,7 +288,6 @@ public class Elevator implements Runnable {
 
     /**
      * Getter for the elevator ID
-     *
      * @return - Elevator ID (Cart #)
      */
     public int getElevatorID() {
@@ -423,15 +458,19 @@ public class Elevator implements Runnable {
             }
         }
 
-        //Uncommenting this will cause the elevator to be diabled upon arrival
-        if (this.elevatorID == 1) {
+        // Logic to cause a fault if needed
+        if (this.floorFaults.get(currentFloor) == 2) {
+            System.out.println("Triggering a hard fault in elevator " + elevatorID);
             try { // CORN
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
             }
+            this.floorFaults.set(currentFloor, 0);
         }
 
         if (this.isEnabled()){
+            //arrival at floor is one movement, increment totalMoves
+            totalMoves ++;
             System.out.println("Elevator " + elevator.getElevatorID() + " Arrived at floor " + elevator.getCurrentFloor());
             elevator.killTimer(); //stop timer
             Instruction instructionToRemove = elevator.isFloorInQueue(elevator.getCurrentFloor());
@@ -649,6 +688,9 @@ public class Elevator implements Runnable {
 
         // Turn data into instruction
         Instruction instruction = Instruction.toInstruction(packetToReceive.getData());
+
+        //determine if instruction causes a fault
+        this.floorFaults.set(instruction.getFloorNumber(), instruction.getTriggerFault());
 
         // add instruction to instructionbox if floor number is not already in box
         if (isFloorInQueue(instruction.getFloorNumber()) == null) {

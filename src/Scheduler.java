@@ -48,6 +48,12 @@ public class Scheduler implements Runnable {
         this.elevator3Direction = 1;
         this.elevator4Direction = 1;
 
+        //set elevator current capacities to 0
+        this.elevator1Capacity = 0;
+        this.elevator2Capacity = 0;
+        this.elevator3Capacity = 0;
+        this.elevator4Capacity = 0;
+
         // creates 2 sockets
         try {
             receiveSocket = new DatagramSocket(41);
@@ -171,9 +177,13 @@ public class Scheduler implements Runnable {
             }
             tempFloorNumber = requestToHandle.getIndexNumber();
         }
+        int elevatorID = 0;
+        if(requestToHandle.isElevator()){ //tell instruction algorithm which elevator the request is coming from
+            elevatorID = requestToHandle.getElevatorFloorID();
+        }
         receiveResponse();
         //Convert to packet and send instruction
-        sendInstructionToElevator(new Instruction(tempDirection, tempFloorNumber, triggerFault));
+        sendInstructionToElevator(new Instruction(tempDirection, tempFloorNumber, triggerFault), elevatorID);
         System.out.println("Scheduler: Request handled");
         // remove request from requestBox
         requestBox.remove(requestToHandle);
@@ -191,12 +201,12 @@ public class Scheduler implements Runnable {
 
     /**This method Converts instruction to packet to send to elevator
      *
-     * @param instruction
+     * @param instruction, elevatorToSendTo
      */
-    public void sendInstructionToElevator(Instruction instruction){
+    public void sendInstructionToElevator(Instruction instruction, int elevatorToSendTo){
         receiveResponse();
         //decide which elevator should get the instruction
-        int closestElevator = getClosestElevator(instruction.getFloorNumber());
+        int closestElevator = getClosestElevator(instruction.getFloorNumber(), elevatorToSendTo);
         switch(closestElevator){
             case(1):
                 elevatorSendPort = 50;
@@ -220,11 +230,10 @@ public class Scheduler implements Runnable {
             DatagramPacket packet = new DatagramPacket(instructionBytes, instructionBytes.length, InetAddress.getLocalHost(), elevatorSendPort);
 
             sendReceiveSocket.send(packet);
-            System.out.println(packet.getData());
 
         } catch (NoRouteToHostException no){
             System.out.println("Failed to send Instruction to Elevator, sending again");
-            sendInstructionToElevator(instruction); //send instruction again
+            sendInstructionToElevator(instruction, elevatorToSendTo); //send instruction again
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Failed to send Instruction to Elevator");
@@ -445,12 +454,65 @@ public class Scheduler implements Runnable {
                 return -1;
         }
     }
+    private void incrementElevatorCapacity(int elevatorNumber) {
+        switch (elevatorNumber) {
+            case 1:
+                elevator1Capacity += 1;
+                break;
+            case 2:
+                elevator2Capacity += 1;
+                break;
+            case 3:
+                elevator3Capacity += 1;
+                break;
+            case 4:
+                elevator4Capacity += 1;
+                break;
+        }
+        System.out.println("Elevator " + elevatorNumber + " current capacity is " + getElevatorCapacity(elevatorNumber));
+    }
 
-    public int getClosestElevator(int floorNumber) {
+    private void decrementElevatorCapacity(int elevatorNumber) {
+        switch (elevatorNumber) {
+            case 1:
+                if (elevator1Capacity > 0) {
+                    elevator1Capacity -= 1;
+                }
+                break;
+            case 2:
+                if (elevator2Capacity > 0) {
+                    elevator2Capacity -= 1;
+                }
+                break;
+            case 3:
+                if (elevator3Capacity > 0) {
+                    elevator3Capacity -= 1;
+                }
+                break;
+            case 4:
+                if (elevator4Capacity > 0) {
+                    elevator4Capacity -= 1;
+                }
+                break;
+        }
+        System.out.println("Elevator " + elevatorNumber + " current capacity is " + getElevatorCapacity(elevatorNumber));
+    }
+
+    public int getClosestElevator(int floorNumber, int elevatorToSendTo) {
         int closestElevator = -1;
         int minDistance = Integer.MAX_VALUE; // Initialize minDistance to maximum possible value
 
+        if (elevatorToSendTo != 0){
+            decrementElevatorCapacity(elevatorToSendTo);
+            return elevatorToSendTo;
+        }
+
         for (int i = 1; i <= 3; i++) { // Updated loop for 4 elevators
+            //skip full elevators
+            if (getElevatorCapacity(i) == 5) {
+                continue;
+            }
+
             int distance = Math.abs(getElevatorPosition(i) - floorNumber); // calculate distance to floor
 
             // Check if the elevator is already at the requested floor
@@ -476,6 +538,7 @@ public class Scheduler implements Runnable {
             System.out.println("Elevator " + closestElevator + " is the closest to floor " + floorNumber);
         }
 
+        incrementElevatorCapacity(closestElevator); //increment capacity
         return closestElevator;
     }
 

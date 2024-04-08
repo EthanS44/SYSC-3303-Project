@@ -51,12 +51,11 @@ public class Parser {
                     }
 
                     if (isElevator){
-                        sendRequestToElevator(indexNumber, buttonId, triggerFault);
+                        sendRequestToElevator(indexNumber, buttonId - 1, triggerFault);
                     } else {
                         sendRequestToFloor(indexNumber, buttonId, triggerFault);
                     }
                 }
-                Thread.sleep(15000);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -90,7 +89,7 @@ public class Parser {
             data[1] = (byte) faultType;
 
             // Send packet to Scheduler receive socket
-            DatagramPacket packetToSend = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), 69 + elevatorID);
+            DatagramPacket packetToSend = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), 749 + elevatorID);
             sendSocket.send(packetToSend);
 
         } catch (IOException e) {

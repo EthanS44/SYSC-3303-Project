@@ -5,14 +5,14 @@ public class ElevatorTest {
 
     @Test
     public void testElevatorInitialization() {
-        Elevator elevator = new Elevator(10, 567, 234, 604);
+        Elevator elevator = new Elevator(10, 567, 234, 604, 125);
         assertEquals(10, elevator.getElevatorID());
         assertEquals(1, elevator.getCurrentFloor());
     }
 
     @Test
     public void testElevatorMoveUp() {
-        Elevator elevator1 = new Elevator(7, 77, 66, 90);
+        Elevator elevator1 = new Elevator(7, 77, 66, 90, 126);
         Thread elevator1Thread = new Thread(elevator1);
         elevator1Thread.start();
 
@@ -31,7 +31,7 @@ public class ElevatorTest {
 
     @Test
     public void testElevatorMoveDown() {
-        Elevator elevator1 = new Elevator(7, 77, 66, 90);
+        Elevator elevator1 = new Elevator(7, 77, 66, 90, 127);
         Thread elevator1Thread = new Thread(elevator1);
         elevator1Thread.start();
 

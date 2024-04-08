@@ -26,6 +26,14 @@ public class Instruction implements Serializable {
     }
 
     /**
+     * Getter for trigger fault
+     * @return - trigger fault int
+     */
+    public int getTriggerFault(){
+        return triggerFault;
+    }
+
+    /**
      * Getter for the direction
      * @return - Direction the elevator will go to
      */

@@ -34,10 +34,10 @@ public class Main {
         Thread twentySecondFloor = new Thread(new Floor(22), "Twenty-Second Floor");
 
         //create elevator thread
-        Thread elevatorThread1 = new Thread(new Elevator(1, 30, 50, 60), "Elevator 1");
-        Thread elevatorThread2 = new Thread(new Elevator(2, 31, 51, 61), "Elevator 2");
-        Thread elevatorThread3 = new Thread(new Elevator(3, 32, 52, 62), "Elevator 3");
-        //Thread elevatorThread4 = new Thread(new Elevator(4, 33, 53, 63), "Elevator 4");
+        Thread elevatorThread1 = new Thread(new Elevator(1, 30, 50, 60, 750), "Elevator 1");
+        Thread elevatorThread2 = new Thread(new Elevator(2, 31, 51, 61, 751), "Elevator 2");
+        Thread elevatorThread3 = new Thread(new Elevator(3, 32, 52, 62, 752), "Elevator 3");
+        //Thread elevatorThread4 = new Thread(new Elevator(4, 33, 53, 63, 753), "Elevator 4");
 
         //start threads
         schedulerThread.start();

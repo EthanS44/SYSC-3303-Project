@@ -12,7 +12,7 @@ public class ElevatorButton {
     public void pushButton(int faultType) {
         System.out.println("Elevator button " + buttonNo + " pushed!");
         LocalDateTime currentTime = LocalDateTime.now();
-        Request request = new Request(true, currentTime, this.elevator.getElevatorID(), buttonNo, this.elevator.getCurrentFloor(), this.elevator.getElevatorID(), 0);
+        Request request = new Request(true, currentTime, this.elevator.getElevatorID(), buttonNo, this.elevator.getCurrentFloor(), this.elevator.getElevatorID(), faultType);
         elevator.sendRequest(request);
         pressed = true;
     }

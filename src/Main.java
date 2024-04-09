@@ -66,8 +66,8 @@ public class Main {
         twentySecondFloor.start();
 
 
-        //elevatorThread1.start();
-        //elevatorThread2.start();
+        elevatorThread1.start();
+        elevatorThread2.start();
         elevatorThread3.start();
         elevatorThread4.start();
 

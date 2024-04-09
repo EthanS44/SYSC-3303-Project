@@ -30,7 +30,7 @@ public class Parser {
                 // Ignore comment lines
                 if (!line.startsWith("#")) {
                     String[] instructions = line.split(" ");
-                    System.out.println(Arrays.toString(instructions));
+                    //System.out.println(Arrays.toString(instructions));
 
                     boolean isElevator = Boolean.parseBoolean(instructions[0]);
                     //LocalDateTime time = LocalDateTime.parse(instructions[1], DateTimeFormatter.ofPattern("HH:mm:ss:SSS"));

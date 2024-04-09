@@ -136,6 +136,7 @@ public class Elevator implements Runnable {
     private static int totalMoves = 0;
     private static int totalInstructions;
     private static long startTime;
+    private static int totalFloorChanges;
 
 
     /**
@@ -159,7 +160,8 @@ public class Elevator implements Runnable {
         this.directionLamp = new DirectionLamp(this);
         this.elevatorEnabled = true;
         this.floorFaults = new ArrayList<>();
-        for(int i = 1; i < 23; i++){
+
+        for(int i = 1; i <= 23; i++){
             this.floorFaults.add(0);
         }
 
@@ -337,6 +339,7 @@ public class Elevator implements Runnable {
      */
     public void setCurrentFloor(int newFloor) {
         currentFloor = newFloor;
+        totalFloorChanges++; //keep track of floor changes
     }
 
     /**
@@ -470,7 +473,7 @@ public class Elevator implements Runnable {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
             }
-            this.floorFaults.set(currentFloor, 0);
+            //this.floorFaults.set(currentFloor, 0);
         }
 
         if (this.isEnabled()){
@@ -496,7 +499,7 @@ public class Elevator implements Runnable {
             if (elevator.incrementTotalMoves()){
                 long endTime = System.currentTimeMillis();
                 System.out.println("Total time elapsed: " + (endTime - elevator.getStartTime()) + "ms");
-                System.out.println("Total moves: " + totalMoves);
+                System.out.println("Total moves: " + totalFloorChanges);
             }
 
             // set state to door handling

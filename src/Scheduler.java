@@ -152,7 +152,6 @@ public class Scheduler implements Runnable {
         boolean tempDirection;
         int tempFloorNumber;
         int triggerFault = requestToHandle.getTriggerFault();
-
         //If it's an elevator it has its own set of rules
         if (requestToHandle.isElevator()) {
             if (requestToHandle.getCurrentFloor() > requestToHandle.getButtonId()) {

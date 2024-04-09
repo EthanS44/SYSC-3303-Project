@@ -65,8 +65,6 @@ public class Parser {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
     public ArrayList<Instruction> testParseTextFile(File textfile){

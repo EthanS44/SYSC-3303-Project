@@ -5,5 +5,24 @@
 # triggerFault - none/transient/hard
 #
 #isElevator #time #indexNumber #buttonId/direction #triggerFault
-true 15:05:25:0 -1 2 none
-true 14:05:25:0 4 4 none
+#
+# Elevator 1 to floor 2
+# Elevator 2 to floor 1
+# Elevator 1 to floor 22
+# Elevator 2 to floor 12
+# Elevator 3 to floor 6
+# Elevator 4 to floor 2
+# Elevator 4 to floor 15, door fault
+# Elevator 3 to floor 4, elevator fault
+# Elevator 1 to floor 1, but stops at 13 along the way (arrival sensor demo)
+#
+true 00:00:00:0 -1 9 none
+false 14:05:25:0 2 1 none
+false 14:05:25:0 1 1 none
+true 14:05:25:0 1 22 none
+true 14:05:25:0 2 12 none
+false 14:05:25:0 6 0 none
+false 14:05:25:0 2 1 none
+true 14:05:25:0 4 10 transient
+true 14:05:25:0 3 4 hard
+true 14:05:25:0 1 20 none

@@ -12,15 +12,13 @@ import java.util.Random;
 // received not sure if it should be sent to the floor or anything that requested something
 
 public class Scheduler implements Runnable {
-    private static final int numberOfFloors = 7;
-    //private final ElevatorQueue elevatorqueue;
-    private schedulerState currentState; //new
+    private static final int numberOfFloors = 22;
+    private schedulerState currentState;
     private ArrayList<Request> requestBox;
     private ArrayList<Response> responseBox;
     private int elevatorSendPort;
     private int elevator1Position, elevator2Position, elevator3Position, elevator4Position;
     private int elevator1Direction, elevator2Direction, elevator3Direction, elevator4Direction; // 1 is up 0 is down
-    private int elevator1Enabled, elevator2Enabled, elevator3Enabled, elevator4Enabled;
     private int elevator1Capacity, elevator2Capacity, elevator3Capacity, elevator4Capacity;
 
     DatagramSocket receiveSocket;
@@ -186,6 +184,7 @@ public class Scheduler implements Runnable {
         receiveResponse();
     }
 
+
     public boolean noPendingRequests() {
         return requestBox.isEmpty();
     }
@@ -213,7 +212,7 @@ public class Scheduler implements Runnable {
                 elevatorSendPort = 52;
                 break;
             case(4):
-                elevatorSendPort = 53;
+                elevatorSendPort = 1005;
                 break;
         }
 
@@ -228,7 +227,7 @@ public class Scheduler implements Runnable {
 
         } catch (NoRouteToHostException no){
             System.out.println("Failed to send Instruction to Elevator, sending again");
-            sendInstructionToElevator(instruction, elevatorToSendTo); //send instruction again
+            //sendInstructionToElevator(instruction, elevatorToSendTo); //send instruction again
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Failed to send Instruction to Elevator");
@@ -502,7 +501,7 @@ public class Scheduler implements Runnable {
             return elevatorToSendTo;
         }
 
-        for (int i = 1; i <= 3; i++) { // Updated loop for 4 elevators
+        for (int i = 1; i <= 4; i++) { // Updated loop for 4 elevators
             //skip full elevators
             if (getElevatorCapacity(i) == 5) {
                 continue;
@@ -540,11 +539,8 @@ public class Scheduler implements Runnable {
     @Override
     public void run(){
 
-
         while(true){
-
             request();
-
         }
     }
 }

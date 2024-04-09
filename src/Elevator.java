@@ -98,11 +98,6 @@ class ElevatorHandlingDoor implements ElevatorState{
             }
         }
 
-        // Increment total moves
-        if (elevator.incrementTotalMoves()){
-            long endTime = System.currentTimeMillis();
-            System.out.println("Total time elapsed: " + (endTime - elevator.getStartTime()) + "ms");
-        }
 
         // remove latest instruction from box
         elevator.getInstructionBox().removeIf(instruction -> instruction.getFloorNumber() == elevator.getCurrentFloor());
@@ -480,7 +475,6 @@ public class Elevator implements Runnable {
 
         if (this.isEnabled()){
             //arrival at floor is one movement, increment totalMoves
-            totalMoves ++;
             System.out.println("Elevator " + elevator.getElevatorID() + " Arrived at floor " + elevator.getCurrentFloor());
             elevator.killTimer(); //stop timer
             Instruction instructionToRemove = elevator.isFloorInQueue(elevator.getCurrentFloor());
@@ -497,6 +491,13 @@ public class Elevator implements Runnable {
             }
 
             elevator.sendResponse(true);
+
+            // Increment total moves
+            if (elevator.incrementTotalMoves()){
+                long endTime = System.currentTimeMillis();
+                System.out.println("Total time elapsed: " + (endTime - elevator.getStartTime()) + "ms");
+                System.out.println("Total moves: " + totalMoves);
+            }
 
             // set state to door handling
             elevator.setCurrentState(new ElevatorHandlingDoor());

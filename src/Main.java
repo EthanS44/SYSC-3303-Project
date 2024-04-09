@@ -37,7 +37,7 @@ public class Main {
         Thread elevatorThread1 = new Thread(new Elevator(1, 30, 50, 60, 750), "Elevator 1");
         Thread elevatorThread2 = new Thread(new Elevator(2, 31, 51, 61, 751), "Elevator 2");
         Thread elevatorThread3 = new Thread(new Elevator(3, 32, 52, 62, 752), "Elevator 3");
-        //Thread elevatorThread4 = new Thread(new Elevator(4, 33, 53, 63, 753), "Elevator 4");
+        Thread elevatorThread4 = new Thread(new Elevator(4, 33, 1005, 63, 753), "Elevator 4");
 
         //start threads
         schedulerThread.start();
@@ -66,10 +66,10 @@ public class Main {
         twentySecondFloor.start();
 
 
-        elevatorThread1.start();
-        elevatorThread2.start();
+        //elevatorThread1.start();
+        //elevatorThread2.start();
         elevatorThread3.start();
-        //elevatorThread4.start();
+        elevatorThread4.start();
 
         parser.parseTextFile(inputFile);
     }

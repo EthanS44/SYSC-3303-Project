@@ -2,6 +2,7 @@ import java.io.*;
 
 public class Response implements Serializable {
 
+
     private int floorNumber; //floor number that the elevator has arrived to
     private int currentDirection; // 1 for up and 0 for down
     private int elevatorID;

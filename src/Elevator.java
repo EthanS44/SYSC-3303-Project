@@ -40,7 +40,8 @@ class ElevatorWaiting implements ElevatorState {
     }
 }
 
-
+//The counter variable helps ensure that the elevator only transitions to the ElevatorMoving state once
+// and then transitions to the ElevatorWaiting state on subsequent calls to the handle method.
 class ElevatorMoving implements ElevatorState {
     boolean counter = false;
     @Override
@@ -87,7 +88,7 @@ class ElevatorHandlingDoor implements ElevatorState{
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
                 }
-                elevator.getFloorFaults().set(elevator.getCurrentFloor(), 0);
+                elevator.getFloorFaults().set(elevator.getCurrentFloor(), 0); //resolves the fault for current floor
             }
 
             elevator.setDoorOpen(false); // Simulating door closing
@@ -99,6 +100,7 @@ class ElevatorHandlingDoor implements ElevatorState{
         }
 
         // Increment total moves
+        //1 move per floor elevator passes
         if (elevator.incrementTotalMoves()){
             long endTime = System.currentTimeMillis();
             System.out.println("Total time elapsed: " + (endTime - elevator.getStartTime()) + "ms");

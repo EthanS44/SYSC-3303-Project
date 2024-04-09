@@ -1,4 +1,9 @@
-// the Request class is essentially analogous to a Packet, this is the structure that the elevators and floors will send to the scheduler.
+/** the Request class is essentially analogous to a Packet,
+ * this is the structure that the elevators
+ * and floors will send to the scheduler.
+ */
+
+
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -73,10 +78,20 @@ public class Request implements Serializable  {
      */
     public int getCurrentFloor() {return currentFloor;}
 
+    /**
+     * Getter for current triggerFault
+     * @return the type of trigger fault, whether hard, transient or none
+     */
     public int getTriggerFault(){
         return triggerFault;
     }
 
+    /**
+     * Converts the request byte to be able to send as packet
+     * @param request the request to be converted
+     * @return byte that is sent as a packet
+     * @throws IOException
+     */
     public static byte[] toByteArray(Request request) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
@@ -84,6 +99,14 @@ public class Request implements Serializable  {
         objectOutputStream.flush();
         return byteArrayOutputStream.toByteArray();
     }
+
+    /**
+     * This method converts the byte to a request
+     * @param byteArray that is to be converted
+     * @return Request
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public static Request toRequest(byte[] byteArray) throws IOException, ClassNotFoundException {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
         ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);

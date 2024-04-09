@@ -13,14 +13,14 @@ import java.util.Random;
 
 public class Scheduler implements Runnable {
     private static final int numberOfFloors = 7;
-    //private final ElevatorQueue elevatorqueue;
+
     private schedulerState currentState; //new
     private ArrayList<Request> requestBox;
     private ArrayList<Response> responseBox;
     private int elevatorSendPort;
     private int elevator1Position, elevator2Position, elevator3Position, elevator4Position;
     private int elevator1Direction, elevator2Direction, elevator3Direction, elevator4Direction; // 1 is up 0 is down
-    private int elevator1Enabled, elevator2Enabled, elevator3Enabled, elevator4Enabled;
+
     private int elevator1Capacity, elevator2Capacity, elevator3Capacity, elevator4Capacity;
 
     DatagramSocket receiveSocket;
@@ -68,7 +68,7 @@ public class Scheduler implements Runnable {
     public Scheduler(int socketNum1, int socketNum2, int socketNum3){
         this.requestBox = new ArrayList<Request>();
         this.responseBox = new ArrayList<Response>();
-        //this.elevatorqueue = queue;
+
         this.currentState = new SchedulerWaiting(); //new
         System.out.println("Scheduler created\n");
 
@@ -135,18 +135,16 @@ public class Scheduler implements Runnable {
     }
 
     public void handleRequest(){
-        //Request requestToHandle = elevatorqueue.getFromRequestBox();
-        // System.out.println("Request received by scheduler, now handling\n");
-        // Check if there are requests in the requestBox
+
         receiveResponse();
 
+        // Check if there are requests in the requestBox
         if (requestBox.isEmpty()) {
             System.out.println("No requests to handle.");
             return;
         }
 
-        // not sure if it should Iterate over the ArrayList of requests
-        // for (Request requestToHandle : requestBox) {
+       //Returns the first element in the request box
         Request requestToHandle = requestBox.get(0);
         System.out.println("Scheduler handling request from request box\n");
 
@@ -172,11 +170,14 @@ public class Scheduler implements Runnable {
             }
             tempFloorNumber = requestToHandle.getIndexNumber();
         }
+        //This will help with finding the closest elevator
+        //This is when a person in the elevator
         int elevatorID = 0;
         if(requestToHandle.isElevator()){ //tell instruction algorithm which elevator the request is coming from
             elevatorID = requestToHandle.getElevatorFloorID();
         }
         receiveResponse();
+
         //Convert to packet and send instruction
         sendInstructionToElevator(new Instruction(tempDirection, tempFloorNumber, triggerFault), elevatorID);
         System.out.println("Scheduler: Request handled");
@@ -190,9 +191,6 @@ public class Scheduler implements Runnable {
         return requestBox.isEmpty();
     }
 
-    public boolean noPendingResponses(){
-        return responseBox.isEmpty();
-    }
 
     /**This method Converts instruction to packet to send to elevator
      *
@@ -239,8 +237,11 @@ public class Scheduler implements Runnable {
         //update elevator capacity
         //
     }
+    //updates elevator positions and directions and send to floor to turn off lamps and buttons
+    //When an elevator reaches a floor it sends the scheduler information to keep
+    //This helps when deciding which elevator is closest
 
-   public void receiveResponse(){ //updates elevator positions and directions and send to floor to turn off lamps and buttons
+   public void receiveResponse(){
 
        // Receive response packet from Elevator
            byte[] data = new byte[250];
@@ -288,12 +289,17 @@ public class Scheduler implements Runnable {
            }
            System.out.println("Elevator " + response.getElevatorID() + " position updated to floor " + getElevatorPosition(response.getElevatorID()) + " and direction to " + getElevatorDirection(response.getElevatorID()));
 
-           //relay response to floor if elevator is stopping there, this is to turn off floor buttons and lamps
+           //Scheduler will relay response to floor
+          // if elevator is stopping there, this is to turn off floor buttons and lamps
            if (response.isStoppingAtFloor()){
                sendResponse(response);
            }
    }
 
+    /**
+     * This function sends the response to the floor that an elevator has reached its floor
+     * @param response
+     */
    public void sendResponse(Response response){
        DatagramPacket newPacket = null;
        try {
@@ -533,7 +539,9 @@ public class Scheduler implements Runnable {
             System.out.println("Elevator " + closestElevator + " is the closest to floor " + floorNumber);
         }
 
-        incrementElevatorCapacity(closestElevator); //increment capacity
+        //when a floor button is kept being called and no elevator
+        //we assume capacity is increasing
+        incrementElevatorCapacity(closestElevator); //increment capacity That means it is a floor
         return closestElevator;
     }
 

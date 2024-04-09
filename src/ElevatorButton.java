@@ -1,14 +1,25 @@
 import java.time.LocalDateTime;
 
+/**
+ * The ElevatorButton class represents a button inside an elevator cabin.
+ */
 public class ElevatorButton {
-    private final int buttonNo;
-    private Elevator elevator;
-    private boolean pressed;
+    private final int buttonNo; // The number of the button
+    private Elevator elevator; // The elevator associated with this button
+    private boolean pressed; // Indicates whether the button has been pressed
 
+    /**
+     * Constructs a new ElevatorButton object with the specified button number.
+     * @param buttonNumber The number of the button.
+     */
     public ElevatorButton(int buttonNumber) {
         this.buttonNo = buttonNumber;
     }
 
+    /**
+     * Pushes the elevator button, sending a request to the elevator controller.
+     * @param faultType The type of fault to be triggered.
+     */
     public void pushButton(int faultType) {
         System.out.println("Elevator button " + buttonNo + " pushed!");
         LocalDateTime currentTime = LocalDateTime.now();
@@ -17,6 +28,9 @@ public class ElevatorButton {
         pressed = true;
     }
 
+    /**
+     * Simulates pushing the elevator button for testing purposes.
+     */
     public void pushButtonTest(){
         System.out.println("Elevator button " + buttonNo + " pushed!");
         LocalDateTime currentTime = LocalDateTime.now();
@@ -27,14 +41,26 @@ public class ElevatorButton {
         pressed = true;
     }
 
+    /**
+     * Gets the number of the button.
+     * @return The button number.
+     */
     public int getButtonNo() {
         return buttonNo;
     }
 
+    /**
+     * Sets the elevator associated with this button.
+     * @param elevator The elevator object to be associated.
+     */
     public void setElevator(Elevator elevator) {
         this.elevator = elevator;
     }
 
+    /**
+     * Checks if the button has been pressed.
+     * @return true if the button has been pressed, false otherwise.
+     */
     public boolean isPressed() {
         return pressed;
     }

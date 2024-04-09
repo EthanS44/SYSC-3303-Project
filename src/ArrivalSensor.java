@@ -1,6 +1,7 @@
 public class ArrivalSensor {
 
     private int floorId;
+
     private Elevator elevator;
 
     public ArrivalSensor(int floorId, Elevator elevator){

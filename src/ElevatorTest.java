@@ -13,6 +13,7 @@ public class ElevatorTest {
         assertEquals(1, elevator.getCurrentFloor());
     }
 
+
     @Test
     public void testElevatorMoveUp() {
         Elevator elevator1 = new Elevator(7, 77, 66, 90, 126);

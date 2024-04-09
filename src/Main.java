@@ -72,5 +72,6 @@ public class Main {
         //elevatorThread4.start();
 
         parser.parseTextFile(inputFile);
+
     }
 }

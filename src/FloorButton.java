@@ -8,6 +8,7 @@ public class FloorButton {
         buttonPressed = false;
     }
 
+
     public void pressButton(){
         buttonPressed = true;
     }

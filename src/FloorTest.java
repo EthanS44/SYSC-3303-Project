@@ -13,6 +13,7 @@ public class FloorTest {
         assertFalse(floor.isWaiting());
     }
 
+
     @Test
     public void testButtonPushed() {
         ElevatorQueue elevatorQueue = new ElevatorQueue();

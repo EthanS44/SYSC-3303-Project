@@ -14,6 +14,7 @@ public class InstructionTest {
         assertEquals(3, instruction2.getFloorNumber());
 
     }
+
     @Test
     void testGetDirection(){
         // Test creating an instruction with direction UP and floor number 2

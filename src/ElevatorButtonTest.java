@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 public class ElevatorButtonTest {
 
+
     @Test
     public void testButtonInitialization() {
         Elevator elevator = new Elevator(15, 675, 432, 687, 129);

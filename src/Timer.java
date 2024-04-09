@@ -3,6 +3,7 @@
  * @author Sam Wilson
  */
 public class Timer implements Runnable {
+
     private int time;
     private boolean isActive;
     private Elevator elevator;

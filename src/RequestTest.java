@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RequestTest {
+
     @Test
     public void testRequestGetters() {
         // Test creating a request from an elevator button press

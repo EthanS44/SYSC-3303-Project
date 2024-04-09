@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ParserTest {
 
+
     @Test
     public void testParseTextFile(){
         DatagramPacket data1;

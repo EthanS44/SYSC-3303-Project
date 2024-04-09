@@ -8,7 +8,6 @@ public class ElevatorQueue {
     private boolean instructionBoxEmpty = true;
     private boolean responseBoxEmpty = true;
 
-    private static final int numberOfFloors = 7; // idk if we need this or not yet
 
     public ElevatorQueue(){
         requestBox = new ArrayList<Request>();

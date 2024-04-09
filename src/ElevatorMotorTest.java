@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ElevatorMotorTest {
 
+
     @Test
     public void testMotorInitialization() {
         ElevatorMotor motor = new ElevatorMotor();

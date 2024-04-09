@@ -11,6 +11,7 @@ public class FloorLampTest {
         assertFalse(lamp.isLampOn());
     }
 
+
     @Test
     public void testTurnOnLamp() {
         FloorLamp lamp = new FloorLamp();

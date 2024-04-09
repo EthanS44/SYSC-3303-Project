@@ -3,6 +3,7 @@ import static org.junit.Assert.*;
 
 public class TimerTest {
 
+
     @Test
     public void testSettingTimer() {
         Timer timer = new Timer();

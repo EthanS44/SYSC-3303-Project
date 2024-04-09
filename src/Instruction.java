@@ -17,6 +17,7 @@ public class Instruction implements Serializable {
         this.triggerFault = triggerFault; // 0 = no fault, 1 = transient fault(door fault), 2 = hard fault(floor fault)
     }
 
+
     /**
      * Getter for floor number
      * @return - floor number to go to

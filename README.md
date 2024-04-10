@@ -1,20 +1,17 @@
 
-3303 Project - Iteration 4
+3303 Project - Iteration 5
 Group 5
 Ethan Stewart, Sam Wilson, Forewa Aboderin, Abody Majeed, Kareem Abdo
 ----------------------------------------------------------------------
 
-The included java project is an elevator simulation using threads for iteration 4 of the 3303 group project.
-There are 21 classes including elevator and scheduler states. There are also 7 test classes and 2 interfaces. 
-
-In this iteration, our team added a timer class and the logic required to handle multiple different faults. The first being a floor timer fault and the second being a door fault.
+The included java project is an elevator simulation using threads for iteration 5 of the 3303 group project.
+There are 22 classes including elevator and scheduler states. There are also 8 test classes and 2 interfaces.
 
 To run the simulation, open the project file "Elevator Simulator" in intellij, navigate to "Main.java" and click
 run. A series of button pushes is ready to be run to observe the movement of the elevators.
-To test the classes, navigate to their respective testing classes and run them. 
+To test the classes, navigate to their respective testing classes and run them.
 
-UML Sequence, UML Class and state diagrams are included in "Iteration 4 UML Sequence.pdf", "Iteration 4 UML Class.pdf", "Iteration 4 Timing Diagram.pdf",
-"Scheduler State Diagram", and "Elevator State Diagram" files respectively.
+UML Sequence, UML Class and state diagrams are included in "Iteration 5 UML Sequence.pdf", "Iteration 5 UML Class.pdf", "Scheduler State Diagram", and "Elevator State Diagram" files respectively.
 
 
 Team Member Responsibilities:
@@ -29,7 +26,7 @@ Kareem - Floor class, UML Sequence diagram
 
 Sam - Scheduler class, Request class, ElevatorQueue class
 
-Abody - Instruction class, Elevator class, Scheduler class, javadocs 
+Abody - Instruction class, Elevator class, Scheduler class, javadocs
 
 Iteration 2 Responsibilities:
 
@@ -41,7 +38,7 @@ Kareem - UML Sequence diagram, Scheduler state diagram
 
 Sam - Elevator Class, ElevatorButton Class, Edited Floor Class, ElevatorQueue class, Edited Scheduler Class, ElevatorTest class
 
-Abody - Elevator State Diagram, Most of Floor Class 
+Abody - Elevator State Diagram, Most of Floor Class
 
 Iteration 3 Responsibilities:
 
@@ -66,3 +63,17 @@ Kareem - Elevator class
 Sam - Timer class, Elevator class
 
 Abody - Test classes, timing diagram
+
+Iteration 5 Responsibilities:
+
+Ethan - Elevator class, scheduler class, floor class
+
+Forewa - Parser class, scheduler class
+
+Kareem - Diagrams, elevator class
+
+Sam - Parser class, elevator class, scheduler class
+
+Abody - Test classes, scheduler class
+
+

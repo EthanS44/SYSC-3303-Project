@@ -7,14 +7,25 @@ public class Timer implements Runnable {
     private boolean isActive;
     private Elevator elevator;
 
+
+    /**
+     * Constructor for timer class
+     */
     public Timer(){
         this.time = 0;
         this.isActive = false;
     }
+    /**
+     * Set timer
+     * @param amount
+     */
     public void setTimer(int amount){
         this.time = amount;
         this.isActive = true;
     }
+    /**
+     * Kill the timer
+     */
     public void killTimer(){
         this.time = 0;
         this.isActive = false;
@@ -62,9 +73,17 @@ public class Timer implements Runnable {
             setTimer(time-1);
         }
     }
+    /**
+     * get the time
+     * @return time
+     */
     public int getTime(){
         return this.time;
     }
+    /**
+     * Check if the timer is active
+     * @return true if so false otherwise
+     */
     public boolean isActive(){
         return this.isActive;
     }
@@ -79,11 +98,16 @@ public class Timer implements Runnable {
         }
         return true;
     }
-    public void setActive(boolean active){
-        this.isActive = active;
-    }
+    /**
+     * Set elevator
+     * @param elevator
+     */
     public void setElevator(Elevator elevator){
         this.elevator = elevator;
     }
+    /**
+     * Get elevator
+     * @return elevator
+     */
     public Elevator getElevator() { return elevator; }
 }

@@ -1,5 +1,8 @@
 import java.io.*;
 
+/**
+ * Instruct class represents Instruction to be sent to elevator
+ */
 public class Instruction implements Serializable {
 
     private boolean direction; // Up = true, down = false
@@ -40,6 +43,13 @@ public class Instruction implements Serializable {
     public boolean getDirection(){
         return direction;
     }
+
+    /**
+     * Converts an instruction to byte
+     * @param instruction to be converted
+     * @return byte[]
+     * @throws IOException
+     */
     public byte[] toByteArray(Instruction instruction) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
@@ -47,9 +57,16 @@ public class Instruction implements Serializable {
         objectOutputStream.flush();
         return byteArrayOutputStream.toByteArray();
     }
+    /**
+     * Converts byte to instruction
+     * @param byteArray to be converted
+     * @return Instruction
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public static Instruction toInstruction(byte[] byteArray) throws IOException, ClassNotFoundException {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
         ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
         return (Instruction) objectInputStream.readObject();
-    } // Instruction.toInstruction(byte[]) will return the instruction represented by the byte array
+    }
 }

@@ -3,9 +3,12 @@ import org.junit.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FloorTest {
+    /**
+     * Test floor Initialization
+     */
     @Test
     public void testFloorInitialization() {
-        ElevatorQueue elevatorQueue = new ElevatorQueue();
+
 
         // Test creating a floor and check its initial state
         Floor floor = new Floor(3);
@@ -13,9 +16,12 @@ public class FloorTest {
         assertFalse(floor.isWaiting());
     }
 
+    /**
+     * Test button pushed
+     */
     @Test
     public void testButtonPushed() {
-        ElevatorQueue elevatorQueue = new ElevatorQueue();
+
         Floor floor = new Floor(5);
 
         // Test pressing the UP button on the floor
@@ -27,16 +33,21 @@ public class FloorTest {
         assertTrue(floor.isWaiting());
     }
 
+    /**
+     * Test button pushed
+     */
     @Test
     public void testFloorNotWaitingInitially() {
-        ElevatorQueue elevatorQueue = new ElevatorQueue();
+
         Floor floor = new Floor(2);
 
         // The floor should not be waiting initially
         assertFalse(floor.isWaiting());
     }
 
-    //Floor Fault
+    /**
+     * Test floor fault
+     */
     @Test
     public void testFloorFault() {
         Floor floor = new Floor(2, true);

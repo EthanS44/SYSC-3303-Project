@@ -1,15 +1,21 @@
 import org.junit.Test;
 import static org.junit.Assert.*;
-
+/**
+ * Timer test class
+ */
 public class TimerTest {
-
+    /**
+     * Test set timer
+     */
     @Test
     public void testSettingTimer() {
         Timer timer = new Timer();
         timer.setTimer(10);
         assertEquals(10, timer.getTime());
     }
-
+    /**
+     * Test Kill timer
+     */
     @Test
     public void testKillingTimer() {
         Timer timer = new Timer();
@@ -17,14 +23,18 @@ public class TimerTest {
         timer.killTimer();
         assertEquals(0, timer.getTime());
     }
-
+    /**
+     * Test timer activation
+     */
     @Test
     public void testTimerActivation() {
         Timer timer = new Timer();
         timer.setTimer(10);
         assertTrue(timer.isActive());
     }
-
+    /**
+     * Test timer deactivation
+     */
     @Test
     public void testTimerDeactivation() {
         Timer timer = new Timer();
@@ -32,7 +42,10 @@ public class TimerTest {
         timer.killTimer();
         assertFalse(timer.isActive());
     }
-
+    /**
+     * Test timer running
+     * @throws InterruptedException
+     */
     @Test
     public void testTimerRunning() throws InterruptedException {
         Timer timer = new Timer();
@@ -41,7 +54,10 @@ public class TimerTest {
         Thread.sleep(3500); // Wait for timer to run down
         assertEquals(0, timer.getTime());
     }
-
+    /**
+     * Test timer deactivation
+     * @throws InterruptedException
+     */
     @Test
     public void testTimerDeactivationOnTimeout() throws InterruptedException {
         Elevator elevator = new Elevator(56);

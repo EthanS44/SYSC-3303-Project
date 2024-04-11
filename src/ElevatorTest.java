@@ -6,6 +6,9 @@ import static org.junit.Assert.*;
 
 public class ElevatorTest {
 
+    /**
+     * Test elevator Initialization
+     */
     @Test
     public void testElevatorInitialization() {
         Elevator elevator = new Elevator(10, 567, 234, 604, 125);
@@ -13,6 +16,9 @@ public class ElevatorTest {
         assertEquals(1, elevator.getCurrentFloor());
     }
 
+    /**
+     * Test Elevator moving up
+     */
     @Test
     public void testElevatorMoveUp() {
         Elevator elevator1 = new Elevator(7, 77, 66, 90, 126);
@@ -31,7 +37,9 @@ public class ElevatorTest {
 
         assertEquals(3, elevator1.getCurrentFloor());
     }
-
+    /**
+     * Test elevator moving down
+     */
     @Test
     public void testElevatorMoveDown() {
         Elevator elevator1 = new Elevator(7, 77, 66, 90, 127);
@@ -52,7 +60,9 @@ public class ElevatorTest {
         assertEquals(2, elevator1.getCurrentFloor());
     }
 
-    //Elevator Fault
+    /**
+     * Test Elevator fault
+     */
     @Test
     public void testElevatorFault() {
         Elevator elevator1 = new Elevator(7);

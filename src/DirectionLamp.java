@@ -1,3 +1,7 @@
+/**
+ * The DirectionLamp class represents the lamps that
+ * indicate the floor(s) which will be visited by the elevator
+ */
 public class DirectionLamp {
 
     private boolean lampOn;
@@ -5,12 +9,20 @@ public class DirectionLamp {
 
     private Elevator elevator;
 
+    /**
+     * Constructor for DirectionLamp class
+     * @param elevator an elevator object
+     */
     public DirectionLamp(Elevator elevator){
         this.lampOn = false;
         this.lampDirection = 0;
         this.elevator = elevator;
     }
 
+    /**
+     * turnOnLamp turns the lamp on
+     * @param direction the direction which the elevator is going
+     */
     public void turnOnLamp(int direction) {
         this.lampOn = true;
         this.lampDirection = direction;
@@ -21,15 +33,19 @@ public class DirectionLamp {
             System.out.println("Elevator " + elevator.getElevatorID() + " lamp is on and pointing down");
         }
     }
+    /**
+     * turnOffLamp turns the lamp off
+     *
+     */
 
     public void turnOffLamp(){
         this.lampOn = false;
         System.out.println("Elevator " + elevator.getElevatorID() + " lamp is off");
     }
-
-    public int getLampDirection() {
-        return lampDirection;
-    }
+    /**
+     * isLampOn checks if the lamp is on or off
+     * @return returns true if on and false if off
+     */
 
     public boolean isLampOn() {
         return lampOn;

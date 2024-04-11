@@ -3,6 +3,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class InstructionTest {
+
+    /**
+     * Test get floor number
+     */
     @Test
     void testGetFloorNumber() {
         // Test creating an instruction with direction UP and floor number 4
@@ -14,6 +18,9 @@ public class InstructionTest {
         assertEquals(3, instruction2.getFloorNumber());
 
     }
+    /**
+     * Test get floor direction
+     */
     @Test
     void testGetDirection(){
         // Test creating an instruction with direction UP and floor number 2

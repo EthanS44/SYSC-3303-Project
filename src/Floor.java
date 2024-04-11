@@ -8,6 +8,9 @@ import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
+/**
+ * Represents the Floor
+ */
 public class Floor implements Runnable {
 
     private int floorNumber;
@@ -22,6 +25,11 @@ public class Floor implements Runnable {
     private FloorLamp upLamp, downLamp;
     private int requestPort;
 
+    /**
+     * Constructs a new Floor object with the specified floor number.
+     *
+     * @param floorNumber The floor number.
+     */
     public Floor(int floorNumber) {
         this.floorNumber = floorNumber;
         this.requestPort = floorNumber + 100;
@@ -58,14 +66,30 @@ public class Floor implements Runnable {
         }
     }
 
+    /**
+     * This function checks if floor is waiting for request to be recieved or not
+     * @return true if waiting, false otherwise
+     */
     public boolean isWaiting() {
         return waiting;
     }
 
+
+    /**
+     * This function gets the current floor number
+     * @return current floor number
+     */
     public int getFloorNumber() {
         return floorNumber;
     }
 
+    /**
+     * Pushes the button for calling an elevator with the specified direction and trigger fault.
+     *
+     * @param buttonDirection The direction of the button (true for up, false for down).
+     * @param triggerFault The trigger fault.
+     * @return true if the request was successfully sent, false otherwise.
+     */
     public boolean pushButton(boolean buttonDirection, int triggerFault) {
         int buttonId = buttonDirection ? 1 : 0;
         LocalDateTime currentTime = LocalDateTime.now();
@@ -95,7 +119,9 @@ public class Floor implements Runnable {
             return false;
         }
     }
-
+    /**
+     * Receive request from the parser
+     */
     public void receiveRequest(){
         byte[] data = new byte[2];
         DatagramPacket packetToReceive = new DatagramPacket(data, data.length);
@@ -111,7 +137,7 @@ public class Floor implements Runnable {
         }
 
         System.out.println("Floor Receiving request");
-        //collect the received packet and convert it to response
+
 
         boolean direction = packetToReceive.getData()[0] == 1;
         int triggerFault = packetToReceive.getData()[1];
@@ -138,6 +164,11 @@ public class Floor implements Runnable {
         }
     }
 
+    /**
+     * Resets all buttons and lamps on the floor.
+     *
+     * @param floor The floor to reset buttons and lamps.
+     */
     public void resetButtons(Floor floor){// resets all buttons and lamps
         floor.upLamp.turnOffLamp();
         floor.downLamp.turnOffLamp();
@@ -145,12 +176,10 @@ public class Floor implements Runnable {
         floor.downButton.resetButton();
         System.out.println("Buttons and lamps reset at floor " + floorNumber);
     }
-    public void handleButtons(Response response){
-        if(response.getFloorNumber()==this.floorNumber){
-            resetButtons(this);
-        }
-    }
 
+    /**
+     * Receive response from the scheduler
+     */
     public void receiveResponse(){
         byte[] data = new byte[200];
         DatagramPacket packetToReceive = new DatagramPacket(data, data.length);

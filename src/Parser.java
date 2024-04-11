@@ -11,8 +11,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * The Parser class is responsible for parsing instructions from a text file
+ * and sending corresponding requests to either elevators or floors.
+ */
 public class Parser {
     public DatagramSocket sendSocket;
+    /**
+     * Constructs a new Parser with the given socket number.
+     *
+     * @param socketNumber The socket number to use.
+     */
     public Parser(int socketNumber){
         try {
             sendSocket = new DatagramSocket(socketNumber);
@@ -21,8 +30,16 @@ public class Parser {
         }
     }
 
+    /**
+     * Constructs a new Parser with the default constructor.
+     */
     public Parser(){}
 
+    /**
+     * Parses a text file containing instructions and sends corresponding requests.
+     *
+     * @param textfile The text file to parse.
+     */
     public void parseTextFile(File textfile){
         try (BufferedReader br = new BufferedReader(new FileReader(textfile))) {
             String line;
@@ -66,7 +83,12 @@ public class Parser {
             throw new RuntimeException(e);
         }
     }
-
+    /**
+     * Parses a text file containing instructions and returns an ArrayList of Instructions.
+     *
+     * @param textfile The text file to parse.
+     * @return An ArrayList of Instructions parsed from the text file.
+     */
     public ArrayList<Instruction> testParseTextFile(File textfile){
         ArrayList<Instruction> dataList = new ArrayList<Instruction>();
         Instruction data1;
@@ -81,9 +103,6 @@ public class Parser {
                     String[] instructions = line.split(" ");
                     System.out.println(Arrays.toString(instructions));
 
-                    boolean isElevator = Boolean.parseBoolean(instructions[0]);
-                    //LocalDateTime time = LocalDateTime.parse(instructions[1], DateTimeFormatter.ofPattern("HH:mm:ss:SSS"));
-                    String time = instructions[1];
                     int indexNumber = Integer.parseInt(instructions[2]);
                     int buttonID = Integer.parseInt(instructions[3]);
 
@@ -128,7 +147,13 @@ public class Parser {
         }
         return null;
     }
-
+    /**
+     * Sends a request to a floor with the specified parameters.
+     *
+     * @param floorID The ID of the floor.
+     * @param direction The direction of the request.
+     * @param faultType The type of fault.
+     */
     private void sendRequestToFloor(int floorID, int direction, int faultType){
         try {
             // data is the byte array that represents the Request
@@ -145,6 +170,13 @@ public class Parser {
             System.exit(1);
         }
     }
+    /**
+     * Sends a request to an elevator with the specified parameters.
+     *
+     * @param elevatorID The ID of the elevator.
+     * @param buttonId The ID of the button pressed.
+     * @param faultType The type of fault.
+     */
     private void sendRequestToElevator(int elevatorID, int buttonId, int faultType){
         try {
             // data is the byte array that represents the Request

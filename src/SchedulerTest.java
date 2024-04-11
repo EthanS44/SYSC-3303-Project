@@ -1,43 +1,93 @@
+
 import org.junit.Test;
-
-import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 public class SchedulerTest {
-    @Test
-    public void testAcknowledgeRequest() {
-        // ElevatorQueue elevatorQueue = new ElevatorQueue();
-        Scheduler scheduler = new Scheduler(578, 385,925);
 
-        LocalDateTime currentTime = LocalDateTime.now();
-        Request testRequest = new Request(true, currentTime, 1, 1, 5, 5, 0);
+    /**
+     * Test Increment Elevator Capacity
+     */
+     @Test
+    public void testIncrementElevatorCapacity() {
+         String test = "test";
+        Scheduler scheduler = new Scheduler(test);
+        int initialCapacity = scheduler.getElevatorCapacity(1);
+        scheduler.incrementElevatorCapacity(1);
+        int newCapacity = scheduler.getElevatorCapacity(1);
+        assertEquals(initialCapacity + 1, newCapacity);
     }
 
+    /**
+     * Test Decrement elevator capacity
+     */
     @Test
-    public void testHandleRequestEleavtor() {
-        ElevatorQueue elevatorQueue = new ElevatorQueue();
-        Scheduler scheduler = new Scheduler(453, 234,677);
-
-        LocalDateTime currentTime = LocalDateTime.now();
-        Request elevatorRequest = new Request(true, currentTime, 1, 1, 5, 5,0);
-
-        elevatorQueue.putInRequestBox(elevatorRequest);
-
-        scheduler.handleRequest();
+    public void testDecrementElevatorCapacity() {
+        String test = "test";
+        Scheduler scheduler = new Scheduler(test);
+        scheduler.incrementElevatorCapacity(2); // Increment capacity to ensure it's greater than 0
+        int initialCapacity = scheduler.getElevatorCapacity(2);
+        scheduler.decrementElevatorCapacity(2);
+        int newCapacity = scheduler.getElevatorCapacity(2);
+        assertEquals(initialCapacity - 1, newCapacity);
     }
 
+    /**Test method for getting the closest elevator
+     *
+     */
     @Test
-    public void testHandleRequestFloor() {
-        ElevatorQueue elevatorQueue = new ElevatorQueue();
-        Scheduler scheduler = new Scheduler(894, 287, 903);
+    public void testGetClosestElevator() {
+        String test = "test";
+        Scheduler scheduler = new Scheduler(test);
+        scheduler.incrementElevatorCapacity(1);
+        scheduler.incrementElevatorCapacity(2);
+        scheduler.incrementElevatorCapacity(3);
+        scheduler.incrementElevatorCapacity(4);
+        scheduler.incrementElevatorCapacity(1);
 
-        LocalDateTime currentTime = LocalDateTime.now();
-        Request testFloorRequest = new Request(false, currentTime, 2, 1, 3, 3,0);
+        // Get the closest elevator for a specific floor
+        int closestElevator = scheduler.getClosestElevator(5, 0);
+        assertTrue(closestElevator > 0 && closestElevator <= 4);
+    }
+    /**
+     * Test get elevator position
+     */
+    // Test method for getting the elevator position
+    @Test
+    public void testGetElevatorPosition() {
+        String test = "test";
+        Scheduler scheduler = new Scheduler(test);
+        // Set elevator positions
+        scheduler.setElevatorPosition(1, 5);
+        scheduler.setElevatorPosition(2, 8);
+        scheduler.setElevatorPosition(3, 3);
+        scheduler.setElevatorPosition(4, 10);
 
-        elevatorQueue.putInRequestBox(testFloorRequest);
+        // Test each elevator position
+        assertEquals(5, scheduler.getElevatorPosition(1));
+        assertEquals(8, scheduler.getElevatorPosition(2));
+        assertEquals(3, scheduler.getElevatorPosition(3));
+        assertEquals(10, scheduler.getElevatorPosition(4));
 
-        scheduler.handleRequest();
+        // Test invalid elevator number
+        assertEquals(-1, scheduler.getElevatorPosition(5));
+    }
+
+    /**
+     * Test elevator direction
+     */
+    @Test
+    public void testGetElevatorDirection() {
+        Scheduler scheduler = new Scheduler();
+        scheduler.setElevatorDirection(1, 1); // Set direction of elevator 1 to up
+        scheduler.setElevatorDirection(2, 0); // Set direction of elevator 2 to down
+        scheduler.setElevatorDirection(3, 0); // Set direction of elevator 3 to down
+        scheduler.setElevatorDirection(4, 1); // Set direction of elevator 4 to up
+
+        // Test direction of each elevator
+        assertEquals(1, scheduler.getElevatorDirection(1));
+        assertEquals(0, scheduler.getElevatorDirection(2));
+        assertEquals(0, scheduler.getElevatorDirection(3));
+        assertEquals(1, scheduler.getElevatorDirection(4));
     }
 
 }

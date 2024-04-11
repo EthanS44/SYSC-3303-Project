@@ -5,14 +5,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-//thought process since we delete the elevator queue the methods that depended on it how will they be handled
-//Also would the scheduler send response back to the floor
-//receive request will be called to collect packet then change to request add to request box. it will be
-// handles converted to instruction from instruction to bytes to be sent over to Elevator. Response will be
-// received not sure if it should be sent to the floor or anything that requested something
-
+/**
+ * The Scheduler class is responsible for managing requests and responses for elevators.
+ * It receives requests from floors, assigns the closest available elevator to handle the request,
+ * and sends instructions to the assigned elevator.
+ * */
 public class Scheduler implements Runnable {
-    private static final int numberOfFloors = 22;
+
     private schedulerState currentState;
     private ArrayList<Request> requestBox;
     private ArrayList<Response> responseBox;
@@ -25,11 +24,13 @@ public class Scheduler implements Runnable {
     DatagramSocket sendReceiveSocket;
     DatagramSocket responseSocket;
 
+    /**
+     * Constructor to initialize the Scheduler with default socket ports.
+     */
     public Scheduler(){
         this.requestBox = new ArrayList<Request>();
         this.responseBox = new ArrayList<Response>();
-        //this.elevatorqueue = queue;
-        this.currentState = new SchedulerWaiting(); //new
+        this.currentState = new SchedulerWaiting();
         System.out.println("Scheduler created\n");
 
         //set elevator starting positions to floor 1
@@ -63,11 +64,15 @@ public class Scheduler implements Runnable {
         this.elevatorSendPort = 52;
     }
 
-    public Scheduler(int socketNum1, int socketNum2, int socketNum3){
+    /**
+     * For testing purposes
+     * @param test
+     */
+    public Scheduler(String test){
         this.requestBox = new ArrayList<Request>();
         this.responseBox = new ArrayList<Response>();
-        //this.elevatorqueue = queue;
-        this.currentState = new SchedulerWaiting(); //new
+
+        this.currentState = new SchedulerWaiting();
         System.out.println("Scheduler created\n");
 
         //set elevator starting positions to floor 1
@@ -82,19 +87,13 @@ public class Scheduler implements Runnable {
         this.elevator3Direction = 1;
         this.elevator4Direction = 1;
 
-        // creates 3 sockets
-        try {
-            receiveSocket = new DatagramSocket(socketNum1);
-            sendReceiveSocket = new DatagramSocket(socketNum2);
-            responseSocket = new DatagramSocket(socketNum3);
-        } catch (SocketException se) {
-            se.printStackTrace();
-            System.out.println("Scheduler failed to create Sockets");
-            System.exit(1);
-        }
-        this.elevatorSendPort = 52;
     }
 
+
+
+    /**
+     * Represents the scheduler waiting state
+     */
     class SchedulerWaiting implements schedulerState {
         @Override
         public void handle(Scheduler scheduler){
@@ -108,7 +107,10 @@ public class Scheduler implements Runnable {
             }
         }
 
-    } //new
+    }
+    /**
+     * Represents the scheduler handling request stae
+     */
     class HandlingRequest implements schedulerState{
         @Override
         public void handle(Scheduler scheduler){
@@ -121,21 +123,25 @@ public class Scheduler implements Runnable {
         }
     }
 
-    //new
-    public schedulerState getCurrentState() { return currentState; }
-    //new
+    /**
+     * Set scheduler current state
+     * @param state
+     */
     public void setCurrentState(schedulerState state){
         this.currentState = state;
     }
-    //new
+    /**
+     * Handles current state
+     */
     public void request() {
         this.currentState.handle(this);
     }
 
+    /**
+     * Handles request
+     */
     public void handleRequest(){
-        //Request requestToHandle = elevatorqueue.getFromRequestBox();
-        // System.out.println("Request received by scheduler, now handling\n");
-        // Check if there are requests in the requestBox
+
         receiveResponse();
 
         if (requestBox.isEmpty()) {
@@ -143,12 +149,9 @@ public class Scheduler implements Runnable {
             return;
         }
 
-        // not sure if it should Iterate over the ArrayList of requests
-        // for (Request requestToHandle : requestBox) {
         Request requestToHandle = requestBox.get(0);
         System.out.println("Scheduler handling request from request box\n");
 
-        //This is for gathering information about what will be in the instruction
         boolean tempDirection;
         int tempFloorNumber;
         int triggerFault = requestToHandle.getTriggerFault();
@@ -177,20 +180,21 @@ public class Scheduler implements Runnable {
         //Convert to packet and send instruction
         sendInstructionToElevator(new Instruction(tempDirection, tempFloorNumber, triggerFault), elevatorID);
         System.out.println("Scheduler: Request handled");
-        // remove request from requestBox
+
         requestBox.remove(requestToHandle);
 
         receiveResponse();
     }
 
-
+    /**
+     * Checks if there is a pending request or not
+     * @return true if no request false is otherwise
+     */
     public boolean noPendingRequests() {
         return requestBox.isEmpty();
     }
 
-    public boolean noPendingResponses(){
-        return responseBox.isEmpty();
-    }
+
 
     /**This method Converts instruction to packet to send to elevator
      *
@@ -234,11 +238,12 @@ public class Scheduler implements Runnable {
         }
         System.out.println("Scheduler: Instruction sent to Elevator " + closestElevator + ".\n");
 
-        //update elevator capacity
-        //
+
     }
 
-   public void receiveResponse(){ //updates elevator positions and directions and send to floor to turn off lamps and buttons
+    /**Receive response packet from Elevator
+     */
+   public void receiveResponse(){
 
        // Receive response packet from Elevator
            byte[] data = new byte[250];
@@ -292,6 +297,10 @@ public class Scheduler implements Runnable {
            }
    }
 
+    /**
+     * This function sends the response to the floor that an elevator has reached its floor
+     * @param response
+     */
    public void sendResponse(Response response){
        DatagramPacket newPacket = null;
        try {
@@ -400,8 +409,37 @@ public class Scheduler implements Runnable {
             }
         }
     }
-    // get the position of a specific elevator
-    private int getElevatorPosition(int elevatorNumber) {
+
+    /**
+     * This method sets elevator position for testing purposes
+     * @param elevatorNumber
+     * @param position
+     */
+    public void setElevatorPosition(int elevatorNumber, int position) {
+        switch (elevatorNumber) {
+            case 1:
+                elevator1Position = position;
+                break;
+            case 2:
+                elevator2Position = position;
+                break;
+            case 3:
+                elevator3Position = position;
+                break;
+            case 4:
+                elevator4Position = position;
+                break;
+            default:
+                System.out.println("Invalid elevator number");
+                break;
+        }
+    }
+    /**get the position of a specific elevator
+     *
+     * @param elevatorNumber
+     * @return elevator position
+     */
+    public int getElevatorPosition(int elevatorNumber) {
         switch (elevatorNumber) {
             case 1:
                 return elevator1Position;
@@ -415,9 +453,36 @@ public class Scheduler implements Runnable {
                 return -1;
         }
     }
+    /**
+     * Set Elevator direction
+     */
+    public void setElevatorDirection(int elevatorNumber, int direction) {
+        switch (elevatorNumber) {
+            case 1:
+                elevator1Direction = direction;
+                break;
+            case 2:
+                elevator2Direction = direction;
+                break;
+            case 3:
+                elevator3Direction = direction;
+                break;
+            case 4:
+                elevator4Direction = direction;
+                break;
+            default:
+                // Handle invalid elevator number
+                System.out.println("Invalid elevator number: " + elevatorNumber);
+                break;
+        }
+    }
 
-    // get the direction of a specific elevator
-    private int getElevatorDirection(int elevatorNumber) {
+    /**get the direction of a specific elevator
+     *
+     * @param elevatorNumber
+     * @return elevator direction
+     */
+    public int getElevatorDirection(int elevatorNumber) {
         switch (elevatorNumber) {
             case 1:
                 return elevator1Direction;
@@ -432,8 +497,12 @@ public class Scheduler implements Runnable {
         }
     }
 
-    // get the direction of a specific elevator
-    private int getElevatorCapacity(int elevatorNumber) {
+    /**get the Elevator capacity
+     *
+     * @param elevatorNumber
+     * @return elevator capacity
+     */
+    public int getElevatorCapacity(int elevatorNumber) {
         switch (elevatorNumber) {
             case 1:
                 return elevator1Capacity;
@@ -447,7 +516,11 @@ public class Scheduler implements Runnable {
                 return -1;
         }
     }
-    private void incrementElevatorCapacity(int elevatorNumber) {
+    /**
+     * Increase elevator capacity
+     * @param elevatorNumber
+     */
+    public void incrementElevatorCapacity(int elevatorNumber) {
         switch (elevatorNumber) {
             case 1:
                 elevator1Capacity += 1;
@@ -464,8 +537,11 @@ public class Scheduler implements Runnable {
         }
         System.out.println("Elevator " + elevatorNumber + " current capacity is " + getElevatorCapacity(elevatorNumber));
     }
-
-    private void decrementElevatorCapacity(int elevatorNumber) {
+    /**
+     * Decrease elevator capacity
+     * @param elevatorNumber
+     */
+    public void decrementElevatorCapacity(int elevatorNumber) {
         switch (elevatorNumber) {
             case 1:
                 if (elevator1Capacity > 0) {
@@ -490,7 +566,12 @@ public class Scheduler implements Runnable {
         }
         System.out.println("Elevator " + elevatorNumber + " current capacity is " + getElevatorCapacity(elevatorNumber));
     }
-
+    /**
+     * Get the closest elevator
+     * @param floorNumber
+     * @param elevatorToSendTo
+     * @return the elevator ID
+     */
     public int getClosestElevator(int floorNumber, int elevatorToSendTo) {
         int closestElevator = -1;
         int minDistance = Integer.MAX_VALUE; // Initialize minDistance to maximum possible value
@@ -500,7 +581,7 @@ public class Scheduler implements Runnable {
             return elevatorToSendTo;
         }
 
-        for (int i = 1; i <= 4; i++) { // Updated loop for 4 elevators
+        for (int i = 1; i <= 4; i++) {
             //skip full elevators
             if (getElevatorCapacity(i) == 5) {
                 continue;
@@ -511,7 +592,7 @@ public class Scheduler implements Runnable {
             // Check if the elevator is already at the requested floor
             if (getElevatorPosition(i) == floorNumber && getElevatorDirection(i) != -1) {
                 closestElevator = i;
-                break; // No need to continue if an elevator is already at the floor and not in idle state
+                break;
             }
 
             // Check if the elevator is pointing in the right direction and not in idle state

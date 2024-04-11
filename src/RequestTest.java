@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RequestTest {
+    /**
+     * Test request getters
+     */
     @Test
     public void testRequestGetters() {
         // Test creating a request from an elevator button press
@@ -26,6 +29,11 @@ public class RequestTest {
         assertEquals(3, floorRequest.getCurrentFloor());
 
     }
+    /**
+     * Test request serialization
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @Test
     public void testSerialization() throws IOException, ClassNotFoundException {
         LocalDateTime currentTime = LocalDateTime.now();

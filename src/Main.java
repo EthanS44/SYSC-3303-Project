@@ -1,5 +1,9 @@
 import java.io.File;
 
+/**
+ * Main class to run the elevator system
+ */
+
 public class Main {
     public static void main(String[] args) {
 

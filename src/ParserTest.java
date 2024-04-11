@@ -10,8 +10,11 @@ import java.util.ArrayList;
 import org.junit.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ParserTest {
+public class  ParserTest {
 
+    /**
+     * Test parse text file
+     */
     @Test
     public void testParseTextFile(){
         DatagramPacket data1;
@@ -30,11 +33,6 @@ public class ParserTest {
         assertEquals(list.get(1).getDirection(), false);
         assertEquals(list.get(1).getFloorNumber(),1);
 
-        /**
-        assertEquals(list.get(2).getTriggerFault(), 2);
-        assertEquals(list.get(2).getDirection(), false);
-        assertEquals(list.get(2).getFloorNumber(),4);
-         **/
     }
 
 }
